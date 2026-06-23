@@ -426,7 +426,7 @@ function pickVoice(){
     for(const p of ['nan','zh-tw-hant-nan','hak']){ const v=voices.find(x=>L(x).startsWith(p)); if(v) return v; }
     return null;
   }
-  // 國語：評分挑聲音。先要台灣腔，再優先「自然」的版本、避開機械/卡通音
+  // 國語：指定優先台灣腔的「美佳」；其次高品質版，避開卡通/玩具表情音
   const score=x=>{
     const n=N(x), l=L(x); let s;
     if(l.startsWith('zh-tw')) s=100;                              // 台灣腔最優先
@@ -434,11 +434,10 @@ function pickVoice(){
     else if(/^zh|^cmn/.test(l) && !l.startsWith('zh-cn') && !/大陸|大陆|china/i.test(n)) s=20;
     else if(/^zh|^cmn/.test(l)) s=5;                              // 大陸口音墊底
     else return -1;                                              // 非中文不要
-    if(/enhanced|premium|進階|siri|neural|natural/i.test(n)) s+=30; // 高品質版最優先
-    if(/google/i.test(n)) s+=15;                                  // Android 上較自然
-    if(/sandy|shelley|flo|eddy|reed/i.test(n)) s+=12;             // Apple 較自然的真人感聲音
-    if(/美佳|婷婷|ting.?ting|mei.?jia/i.test(n)) s-=25;            // 老舊機械音
-    if(/grandma|grandpa|rocko|boing|bahh|bells|bubbles|jester|organ|superstar|trinoids|whisper|wobble|zarvox|albert|junior|fred|ralph|cellos|pipe|deranged|hysterical|news/i.test(n)) s-=50; // 卡通/玩具音
+    if(/美佳|mei.?jia/i.test(n)) s+=40;                           // 指定用美佳
+    if(/enhanced|premium|進階|siri|neural/i.test(n)) s+=30;       // 若有高品質版更好
+    if(/google/i.test(n)) s+=15;                                  // Android 上的台灣語音
+    if(/grandma|grandpa|rocko|boing|bahh|bells|bubbles|jester|organ|superstar|trinoids|whisper|wobble|zarvox|albert|junior|fred|ralph|cellos|pipe|deranged|hysterical|news|eddy|flo|reed/i.test(n)) s-=50; // 卡通/表情音避開
     return s;
   };
   let best=null, bestS=0;
