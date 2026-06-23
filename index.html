@@ -418,9 +418,29 @@ let autoRead=true, voices=[];
 function loadVoices(){ try{ voices=window.speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; } }
 if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
 function pickVoice(){
-  const pref = lang==='tai' ? ['nan','zh-tw-hant-nan','hak'] : ['zh-tw','zh-hk','cmn','zh-cn','zh'];
-  for(const p of pref){ const v=voices.find(x=>(x.lang||'').toLowerCase().startsWith(p)); if(v) return v; }
-  return null;
+  const L=x=>(x.lang||'').toLowerCase(), N=x=>(x.name||'');
+  if(lang==='tai'){
+    for(const p of ['nan','zh-tw-hant-nan','hak']){ const v=voices.find(x=>L(x).startsWith(p)); if(v) return v; }
+    return null;
+  }
+  // 國語：評分挑聲音。先要台灣腔，再優先「自然」的版本、避開機械/卡通音
+  const score=x=>{
+    const n=N(x), l=L(x); let s;
+    if(l.startsWith('zh-tw')) s=100;                              // 台灣腔最優先
+    else if(l.startsWith('zh-hk')) s=40;
+    else if(/^zh|^cmn/.test(l) && !l.startsWith('zh-cn') && !/大陸|大陆|china/i.test(n)) s=20;
+    else if(/^zh|^cmn/.test(l)) s=5;                              // 大陸口音墊底
+    else return -1;                                              // 非中文不要
+    if(/enhanced|premium|進階|siri|neural|natural/i.test(n)) s+=30; // 高品質版最優先
+    if(/google/i.test(n)) s+=15;                                  // Android 上較自然
+    if(/sandy|shelley|flo|eddy|reed/i.test(n)) s+=12;             // Apple 較自然的真人感聲音
+    if(/美佳|婷婷|ting.?ting|mei.?jia/i.test(n)) s-=25;            // 老舊機械音
+    if(/grandma|grandpa|rocko|boing|bahh|bells|bubbles|jester|organ|superstar|trinoids|whisper|wobble|zarvox|albert|junior|fred|ralph|cellos|pipe|deranged|hysterical|news/i.test(n)) s-=50; // 卡通/玩具音
+    return s;
+  };
+  let best=null, bestS=0;
+  for(const v of voices){ const s=score(v); if(s>bestS){ bestS=s; best=v; } }
+  return best;
 }
 function stepSpeech(s){ if(!s) s=steps[i];
   if(s.type==='welcome') return '歡迎。花二十分鐘，了解適合你的腎臟治療。';
@@ -436,7 +456,7 @@ function speak(text){
   let v=pickVoice(), fallback=false;
   if(!v && lang==='tai'){ const zh=voices.find(x=>(x.lang||'').toLowerCase().startsWith('zh')); if(zh){ v=zh; fallback=true; } }
   const u=new SpeechSynthesisUtterance(text);
-  if(v){ u.voice=v; u.lang=v.lang; } else u.lang='zh-TW';
+  if(v){ u.voice=v; u.lang = lang==='guo' ? 'zh-TW' : v.lang; } else u.lang='zh-TW';
   u.rate=0.9; u.pitch=1;
   window.speechSynthesis.speak(u);
   if(fallback && !state._twWarned){ state._twWarned=true; toast('此裝置無台語語音，暫以國語朗讀；台語建議用院方錄音'); }
