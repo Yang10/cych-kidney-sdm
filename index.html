@@ -185,7 +185,7 @@
 <header>
   <div class="brand"><b>嘉義基督教醫院　腎臟內科</b><span>腎臟治療衛教・共享決策</span></div>
   <div class="ctrls">
-    <button id="readBtn" class="rbtn focusable" onclick="toggleRead()">🔊 朗讀：關</button>
+    <button id="readBtn" class="rbtn focusable on" onclick="toggleRead()">🔊 朗讀：開</button>
     <div class="lang">
       <button id="langGuo" class="on focusable" onclick="setLang('guo')">國語</button>
       <button id="langTai" class="focusable" onclick="setLang('tai')">台語</button>
@@ -414,7 +414,7 @@ function shuffle(a){ for(let j=a.length-1;j>0;j--){ const r=Math.floor(Math.rand
 steps.forEach(s=>{ if(s.type==='quiz') shuffle(s.options); });
 
 /* ── 語音朗讀（國語可用瀏覽器語音；台語多半無語音，靠院方錄音） ── */
-let autoRead=false, voices=[];
+let autoRead=true, voices=[];
 function loadVoices(){ try{ voices=window.speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; } }
 if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
 function pickVoice(){
