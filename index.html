@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>腎臟治療衛教與共享決策｜嘉義基督教醫院 腎臟內科</title>
+
+<!--
+═══════════════════════════════════════════════════════════════════
+  一份檔案，手機（直/橫式）與電視（橫式）通用。
+  ① 置入嘉基影片：下方 <script> 最上面 const VIDEOS = {...}
+     vimeo＝國語影片的 Vimeo 編號、vimeo_tw＝台語（選填）。留空("")顯示插槽示意。
+     例：vimeo.com/378770445 → 只填數字 "378770445"。切換國語/台語時自動換片。
+  ② 操作：手機用手指點。電視用遙控器 ▲▼ 移動、數字鍵直選、OK 確認、▶ 下一步。
+  ③ 語音：右上角「🔊 朗讀」開啟後會自動唸題；題目卡也有 🔊 可重唸。
+     國語用瀏覽器內建語音；台語瀏覽器多半無語音，建議靠院方台語錄音/影片。
+  ④ 發佈：把網址做成 QR 或 LINE 連結，病人在家／候診先看完，帶摘要來診間。
+═══════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  :root{
+    --brand:#CB5A50; --brand-deep:#A8413A; --brand-soft:#FBF1EF; --brand-tint:#F3D7D2;
+    --pd:#2A7F74; --pd-soft:#E3F0EE; --hd:#3E6B9E; --hd-soft:#E7EEF6;
+    --ink:#2B2622; --muted:#7a726c; --line:#EADCD8; --ok:#2A7F74; --warn:#B5462E; --paper:#fffdfc;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:rgba(203,90,80,.15);}
+  html,body{height:100%;}
+  /* 手機優先：基礎尺寸 */
+  body{font-family:"Microsoft JhengHei","Noto Sans TC","PingFang TC",Arial,sans-serif;
+    background:var(--brand-soft); color:var(--ink); font-size:18px; line-height:1.65;
+    display:flex; flex-direction:column; min-height:100vh; -webkit-text-size-adjust:100%;}
+  header{background:var(--brand); color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .brand b{font-size:19px; font-weight:800; display:block;} .brand span{font-size:13px; opacity:.9;}
+  .lang{display:flex; gap:8px; flex:none;}
+  .lang button{background:rgba(255,255,255,.16); color:#fff; border:1.5px solid rgba(255,255,255,.5);
+    border-radius:999px; padding:7px 15px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;}
+  .lang button.on{background:#fff; color:var(--brand);}
+
+  .progress{padding:12px 18px 0;}
+  .bar{height:10px; background:var(--brand-tint); border-radius:999px; overflow:hidden;}
+  .bar i{display:block; height:100%; width:0; background:var(--brand); transition:width .4s ease;}
+  .ptext{font-size:13px; color:var(--muted); margin-top:6px;}
+
+  main{flex:1; display:flex; justify-content:center; padding:18px 16px 120px;}
+  .stage{width:100%; max-width:640px;}
+  .eyebrow{color:var(--brand); font-weight:800; letter-spacing:.06em; font-size:14px;}
+  h1{font-size:26px; line-height:1.32; margin:8px 0 6px; font-weight:800;}
+  p.lead{font-size:18px; color:#3a352f; margin:10px 0;}
+
+  .video{margin:14px 0; border-radius:16px; overflow:hidden; background:#0e1413;
+    aspect-ratio:16/9; position:relative; display:flex; align-items:center; justify-content:center;}
+  .video video{width:100%; height:100%; object-fit:contain; background:#000;}
+  .vstage{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:12px; color:#eef6f4; text-align:center; padding:20px; background:radial-gradient(120% 90% at 50% 30%,#243b39 0%,#0e1413 70%);}
+  .playbtn{width:78px; height:78px; border-radius:50%; background:rgba(255,255,255,.96); color:var(--brand);
+    display:flex; align-items:center; justify-content:center; font-size:34px; cursor:pointer; border:none; box-shadow:0 8px 24px rgba(0,0,0,.4);}
+  .vstage .label{font-size:18px; font-weight:700;} .vstage small{opacity:.7; font-size:13px;}
+
+  .card{background:var(--paper); border:1.5px solid var(--line); border-radius:16px; padding:18px; margin:12px 0;}
+  .q{font-size:21px; font-weight:800; margin-bottom:14px;}
+  .opts{display:grid; gap:12px;}
+
+  .opt,.chk,.vchip{font-family:inherit; color:var(--ink); cursor:pointer; background:#fff;
+    border:2.5px solid var(--line); border-radius:14px; transition:.12s; width:100%; text-align:left;}
+  .opt{display:flex; align-items:center; gap:14px; padding:16px 18px; font-size:19px; min-height:64px;}
+  .num{flex:none; width:34px; height:34px; border-radius:9px; background:var(--brand-tint); color:var(--brand-deep);
+    font-size:18px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  .opt.sel{border-color:var(--brand); background:#fdeeec;}
+  .opt.correct{border-color:var(--ok); background:#e7f3ef;} .opt.correct .num{background:var(--ok); color:#fff;}
+  .opt.wrong{border-color:var(--warn); background:#f7e9e4;} .opt.wrong .num{background:var(--warn); color:#fff;}
+  .opt .tag{margin-left:auto; font-size:15px; font-weight:800;}
+  .opt.correct .tag{color:var(--ok);} .opt.wrong .tag{color:var(--warn);}
+
+  .feedback{margin-top:12px; padding:15px; border-radius:12px; font-size:17px; display:none;}
+  .feedback.show{display:block;}
+  .feedback.good{background:#e7f3ef; border-left:6px solid var(--ok);}
+  .feedback.tip{background:#fdeeec; border-left:6px solid var(--brand);}
+
+  .compare{display:grid; grid-template-columns:1fr; gap:12px; margin:14px 0;}
+  .compare .col{border-radius:16px; padding:16px; border:2.5px solid;}
+  .compare .pdcol{background:var(--pd-soft); border-color:var(--pd);}
+  .compare .hdcol{background:var(--hd-soft); border-color:var(--hd);}
+  .compare h3{font-size:21px; margin-bottom:8px;}
+  .compare .pdcol h3{color:var(--pd);} .compare .hdcol h3{color:var(--hd);}
+  .compare ul{list-style:none; display:grid; gap:8px;}
+  .compare li{font-size:16px; padding-left:22px; position:relative;}
+  .compare li::before{content:"›"; position:absolute; left:4px; font-weight:900; font-size:20px; top:-2px; color:var(--brand);}
+
+  .values{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin:14px 0;}
+  .vchip{padding:16px 14px; font-size:16px; font-weight:700; min-height:74px;
+    display:flex; align-items:center; gap:10px; position:relative;}
+  .vchip .rank{display:none; position:absolute; top:-11px; left:-11px; width:36px; height:36px; border-radius:50%;
+    background:var(--brand); color:#fff; font-size:18px; align-items:center; justify-content:center; font-weight:800;}
+  .vchip.sel{border-color:var(--brand); background:#fdeeec;} .vchip.sel .rank{display:flex;}
+  .vchip .num{width:28px; height:28px; font-size:15px; border-radius:8px;}
+
+  .checklist{display:grid; gap:11px; margin:14px 0;}
+  .chk{display:flex; align-items:center; gap:12px; padding:15px 16px; font-size:17px;}
+  .chk.sel{border-color:var(--pd); background:var(--pd-soft);}
+  .chk .box{width:28px; height:28px; border-radius:7px; border:3px solid var(--brand-tint); flex:none;}
+  .chk.sel .box{background:var(--pd); border-color:var(--pd);}
+
+  .kfocus{outline:5px solid var(--brand); outline-offset:3px; box-shadow:0 0 0 8px rgba(203,90,80,.18);}
+
+  .nav{position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1.5px solid var(--line);
+    padding:12px 16px; display:flex; align-items:center; gap:12px; padding-bottom:max(12px,env(safe-area-inset-bottom));}
+  .keyhint{display:none; flex:1; font-size:15px; color:var(--muted); line-height:1.5;}
+  .keyhint kbd{display:inline-block; background:var(--brand-tint); color:var(--brand-deep); border-radius:7px; padding:1px 9px; font-weight:800; font-family:inherit; margin:0 1px;}
+  .btn{font-family:inherit; font-size:19px; font-weight:800; border-radius:13px; padding:15px 22px; cursor:pointer; border:none;}
+  .btn.primary{background:var(--brand); color:#fff; flex:1;}
+  .btn.primary:disabled{background:#e3c4bf; cursor:not-allowed;}
+  .btn.ghost{background:#fff; color:var(--muted); border:2px solid var(--line); font-size:16px; padding:14px 16px; flex:none;}
+
+  .summary{background:#fff; border:1.5px solid var(--line); border-radius:18px; overflow:hidden;}
+  .summary .head{background:var(--brand); color:#fff; padding:18px 20px;}
+  .summary .head b{font-size:21px;} .summary .head span{display:block; font-size:14px; opacity:.9; margin-top:4px;}
+  .srow{padding:18px 20px; border-bottom:1.5px solid var(--line);} .srow:last-child{border:none;}
+  .srow .k{font-size:15px; color:var(--muted); font-weight:800; letter-spacing:.05em; margin-bottom:8px;}
+  .lean{display:inline-block; font-size:20px; font-weight:800; padding:8px 20px; border-radius:999px;}
+  .lean.pd{background:var(--pd-soft); color:var(--pd);} .lean.hd{background:var(--hd-soft); color:var(--hd);}
+  .lean.un{background:var(--brand-tint); color:var(--brand-deep);}
+  .pill{display:inline-block; background:var(--brand-tint); color:var(--brand-deep); border-radius:999px; padding:6px 14px; font-size:16px; font-weight:700; margin:0 6px 8px 0;}
+  .gap{display:flex; gap:11px; align-items:flex-start; padding:11px 0; border-bottom:1px dashed var(--line);} .gap:last-child{border:none;}
+  .gap .ic{flex:none; width:32px; height:32px; border-radius:50%; background:#f7e9e4; color:var(--warn); display:flex; align-items:center; justify-content:center; font-weight:900;}
+  .gap.okrow .ic{background:#e7f3ef; color:var(--ok);}
+  .ask{font-size:18px; padding:10px 0; border-bottom:1px dashed var(--line);} .ask:last-child{border:none;}
+  .ask::before{content:"？"; color:var(--brand); font-weight:900; margin-right:10px;}
+
+  .center{text-align:center;} .big-emoji{font-size:60px; margin:8px 0;}
+  .name-input{width:100%; font-family:inherit; font-size:19px; padding:15px; border:2.5px solid var(--line); border-radius:13px; margin-top:10px;}
+  .hint{font-size:14px; color:var(--muted); margin-top:8px;}
+  .toolbar{display:grid; gap:10px; margin-top:16px;}
+  .toolbar .btn{flex:none; width:100%;}
+  #sumText{display:none; width:100%; height:180px; margin-top:12px; font-family:inherit; font-size:15px; padding:14px; border:2px solid var(--line); border-radius:12px; background:#fff;}
+  .toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%); background:var(--ink); color:#fff;
+    padding:12px 22px; border-radius:999px; font-size:16px; opacity:0; transition:.25s; pointer-events:none; z-index:9;}
+  .toast.show{opacity:1;}
+
+  /* 大螢幕 / 電視：放大字級、顯示遙控器提示 */
+  @media (min-width:1100px){
+    body{font-size:26px;} header{padding:18px 40px;} .brand b{font-size:28px;} .brand span{font-size:18px;}
+    .progress{padding:14px 40px 0;} main{padding:30px 40px 150px;} .stage{max-width:1000px;}
+    h1{font-size:44px;} p.lead{font-size:27px;} .eyebrow{font-size:20px;}
+    .q{font-size:30px;} .opt{font-size:28px; min-height:86px; padding:22px 26px; gap:20px;}
+    .num{width:50px; height:50px; font-size:26px; border-radius:12px;}
+    .compare{grid-template-columns:1fr 1fr;} .compare h3{font-size:28px;} .compare li{font-size:22px;}
+    .vchip{font-size:25px; min-height:96px;} .vchip .num{width:44px; height:44px; font-size:24px;}
+    .chk{font-size:25px;} .feedback{font-size:24px;}
+    .nav{padding:18px 40px;} .keyhint{display:block;} .btn{font-size:27px; padding:20px 40px;}
+    .btn.primary{flex:none;} .lang button{font-size:20px; padding:10px 22px;}
+    .toolbar{display:flex; flex-wrap:wrap;} .toolbar .btn{width:auto;}
+    .summary .head b{font-size:30px;} .srow{padding:24px 30px;}
+  }
+  /* 朗讀鈕 / 語言控制 */
+  .ctrls{display:flex; align-items:center; gap:8px; flex:none;}
+  .rbtn{background:rgba(255,255,255,.16); color:#fff; border:1.5px solid rgba(255,255,255,.5);
+    border-radius:999px; padding:7px 13px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap;}
+  .rbtn.on{background:#fff; color:var(--brand);}
+  /* 唸題小按鈕（題目卡內） */
+  .qrow{display:flex; align-items:flex-start; gap:10px; margin-bottom:14px;}
+  .qrow .q{margin-bottom:0; flex:1;}
+  .speak{flex:none; background:var(--brand-tint); color:var(--brand-deep); border:none; border-radius:10px;
+    padding:8px 12px; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; white-space:nowrap;}
+
+  /* 寬螢幕（含手機橫式、平板）比較表並排 */
+  @media (min-width:720px){ .compare{grid-template-columns:1fr 1fr;} }
+
+  /* 矮螢幕（手機橫式）壓縮上下框，把空間留給內容 */
+  @media (max-height:560px) and (max-width:1099px){
+    header{padding:8px 16px;} .brand b{font-size:16px;} .brand span{display:none;}
+    .rbtn,.lang button{padding:5px 11px; font-size:13px;}
+    .progress{padding:7px 16px 0;} .bar{height:8px;}
+    main{padding:12px 16px 84px;} h1{font-size:21px; margin-top:4px;} p.lead{font-size:16px; margin:6px 0;}
+    .video{height:48vh; aspect-ratio:auto;}
+    .nav{padding:8px 16px;} .btn{padding:11px 18px; font-size:17px;} .btn.ghost{padding:11px 13px; font-size:15px;}
+    .card{padding:14px;} .q{font-size:18px;} .opt{min-height:54px; padding:12px 14px; font-size:17px;}
+  }
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><b>嘉義基督教醫院　腎臟內科</b><span>腎臟治療衛教・共享決策</span></div>
+  <div class="ctrls">
+    <button id="readBtn" class="rbtn focusable" onclick="toggleRead()">🔊 朗讀：關</button>
+    <div class="lang">
+      <button id="langGuo" class="on focusable" onclick="setLang('guo')">國語</button>
+      <button id="langTai" class="focusable" onclick="setLang('tai')">台語</button>
+    </div>
+  </div>
+</header>
+
+<div class="progress"><div class="bar"><i id="barFill"></i></div><div class="ptext" id="barText">準備開始</div></div>
+<main><div class="stage" id="stage"></div></main>
+<div class="toast" id="toast"></div>
+
+<div class="nav">
+  <div class="keyhint">遙控器：<kbd>▲</kbd><kbd>▼</kbd> 移動　<kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 直接選　<kbd>OK</kbd> 確認　<kbd>▶</kbd> 下一步　<kbd>◀</kbd> 上一步</div>
+  <button class="btn ghost" id="backBtn" onclick="prev()">◀ 上一步</button>
+  <button class="btn primary" id="nextBtn" onclick="next()">開始 ▶</button>
+</div>
+
+<script>
+/* ════════════ 影片設定：嘉基只改這裡 ════════════ */
+const VIDEOS = {
+  why_rrt: { label:"腎臟為什麼需要治療", vimeo:"331348211", vimeo_tw:"" },
+  paths:   { label:"三種治療方式總覽",   vimeo:"331348211", vimeo_tw:"" },
+  pd:      { label:"腹膜透析 PD：原理與一天的生活", vimeo:"378770445", vimeo_tw:"" },
+  hd:      { label:"血液透析 HD：原理與一天的生活", vimeo:"331349017", vimeo_tw:"" },
+  concern: { label:"常見擔心：感染、導管、我做得到嗎", vimeo:"", vimeo_tw:"" },
+};
+/* ═══════════════════════════════════════════════ */
+
+let lang='guo';
+const state={ name:"", answers:{}, values:[], concerns:[], asks:[], leaning:null, _picked:undefined, _focus:'first' };
+
+function setLang(l){ lang=l;
+  document.getElementById('langGuo').classList.toggle('on',l==='guo');
+  document.getElementById('langTai').classList.toggle('on',l==='tai');
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  render(); }
+
+const steps=[
+{ id:'welcome', type:'welcome' },
+{ id:'why', type:'video', video:'why_rrt', eyebrow:'第一步', title:'當腎臟需要幫忙的時候',
+  lead:'腎臟負責清除身體的廢物和多餘水分。當功能下降到一定程度，就需要用治療來「代替」這份工作。這支短片先帶你了解整體狀況。' },
+{ id:'why_q', type:'quiz', eyebrow:'小確認', q:'腎臟替代治療主要是在幫身體做什麼？',
+  options:[{t:'清除廢物與多餘的水分',correct:true},{t:'讓腎臟重新長回來',correct:false},{t:'只是補充營養',correct:false}],
+  good:'沒錯。治療是「代替」腎臟清除廢物和水分，讓你維持日常生活。',
+  tip:'治療的目的是「代替」腎臟清除廢物和水分；腎臟本身不會因此復原，但好好治療能維持生活品質。', key:'治療目的' },
+{ id:'paths', type:'video', video:'paths', eyebrow:'第二步', title:'你有哪些選擇',
+  lead:'常見的路有三條：在家做的腹膜透析（PD）、到醫院做的血液透析（HD），以及腎臟移植。下一題幫你分清楚前兩種在哪裡進行。' },
+{ id:'paths_q', type:'quiz', eyebrow:'小確認', q:'下面哪一個是對的？',
+  options:[{t:'腹膜透析（PD）多在家中自己進行',correct:true},{t:'血液透析（HD）都在家裡做、不用去醫院',correct:false},{t:'兩種治療都一定要住院',correct:false}],
+  good:'正確。PD 多在家中或工作場所自己操作；HD 多數人固定到醫院或診所。',
+  tip:'重點差別：PD 多在家自己做、時間較彈性；HD 多數人一週固定幾次到醫院。兩者各有適合的人。', key:'治療地點差異' },
+{ id:'pd', type:'video', video:'pd', eyebrow:'第三步', title:'腹膜透析 PD：怎麼運作',
+  lead:'PD 利用你自己肚子裡的「腹膜」當作過濾膜。把透析液灌進腹腔停留一段時間，廢物和水分滲過來，再把液體放掉、換新的。多數步驟在家完成。' },
+{ id:'pd_q', type:'quiz', eyebrow:'小確認', q:'PD 是利用身體的哪個部位來過濾廢物？',
+  options:[{t:'肚子裡的腹膜',correct:true},{t:'手臂的血管',correct:false},{t:'腎臟本身',correct:false}],
+  good:'對。PD 用自己的腹膜當濾膜，透過換液把廢物帶走。',
+  tip:'PD 是用「腹膜」當過濾膜（不是血管，也不是腎臟）。透析液灌入再放出，把廢物帶走。', key:'PD 原理' },
+{ id:'hd', type:'video', video:'hd', eyebrow:'第四步', title:'血液透析 HD：怎麼運作',
+  lead:'HD 是把血液引出體外，經過洗腎機過濾乾淨後再送回身體。需要先建立血管通路，多數人一週固定到醫院幾次、每次約四小時。' },
+{ id:'hd_q', type:'quiz', eyebrow:'小確認', q:'多數人接受 HD 的方式比較接近哪一種？',
+  options:[{t:'一週固定幾次、到醫院由機器過濾血液',correct:true},{t:'每天在家換液、不用機器',correct:false},{t:'完全不需要任何通路或準備',correct:false}],
+  good:'正確。HD 多在醫院進行、需要血管通路，作息會圍繞洗腎時間安排。',
+  tip:'HD 多在醫院、需要血管通路、一週固定幾次；PD 則多在家、每天換液。各有適合的生活型態。', key:'HD 原理' },
+{ id:'compare', type:'compare', eyebrow:'第五步', title:'用你在意的事情來比較',
+  lead:'沒有「比較好」的治療，只有「比較適合你」的治療。先看看兩者的差別，再選出對你最重要的事。' },
+{ id:'values', type:'values', eyebrow:'最重要的一步', title:'對你來說，最重要的是什麼？',
+  lead:'請選出 3 項你最在意的事（按你在意的先後選）。這會幫護理師更了解你，給你更貼切的建議。',
+  items:['能在家、不常跑醫院','時間安排有彈性','怕針、不想常扎針','旅行、外出方便','飲食和喝水限制少一點','想自己掌握、自我照顧','家裡有放器材的空間','有家人可以幫忙'] },
+{ id:'concerns', type:'video_concern', video:'concern', eyebrow:'安心一下', title:'大家最常擔心的事',
+  lead:'很多人對 PD 的擔心其實都有方法處理。看完短片後，選出你還想多了解的部分，等一下護理師會特別為你說明。',
+  items:['感染（腹膜炎）怎麼預防','導管平常怎麼照顧','我年紀大／眼睛不好，做得到嗎','家人能不能幫我','洗澡、生活會不會受影響','費用和健保給付'] },
+{ id:'leaning', type:'leaning', eyebrow:'最後一題', title:'看完之後，你目前的想法是？',
+  lead:'沒有對錯，也還可以改變。這只是讓護理師知道從哪裡跟你聊起。' },
+{ id:'summary', type:'summary' },
+];
+
+let i=0;
+
+function render(){
+  const s=steps[i], stage=document.getElementById('stage');
+  document.getElementById('barFill').style.width=Math.round(i/(steps.length-1)*100)+'%';
+  document.getElementById('barText').textContent = s.type==='summary'?'完成！把摘要給護理師':`第 ${i} / ${steps.length-2} 段　約 20 分鐘`;
+  document.getElementById('backBtn').style.visibility=i===0?'hidden':'visible';
+  let h='';
+  if(s.type==='welcome'){
+    h=`<div class="center"><div class="big-emoji">🩺</div><div class="eyebrow">歡迎</div>
+      <h1>花 20 分鐘，了解適合你的腎臟治療</h1>
+      <p class="lead">用短片和幾個小問題，認識「腹膜透析」與「血液透析」。可在家或候診時先看完，完成後把摘要拿給護理師，她會花 10 分鐘和你確認、回答問題。</p>
+      <div class="card" style="text-align:left"><div class="q">先告訴我們你的稱呼（可不填）</div>
+      <input class="name-input focusable" id="nameIn" placeholder="例如：王先生／陳阿姨" value="${state.name}">
+      <div class="hint">隨時可暫停、回上一步重看。看不清楚可按右上角切換國語／台語。</div></div></div>`;
+  }
+  else if(s.type==='video'||s.type==='video_concern'){
+    h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p>${videoBlock(s.video)}`;
+    if(s.type==='video_concern')
+      h+=`<div class="card"><div class="q">看完後，你還想多了解哪些？（可複選）</div><div class="checklist">${s.items.map((t,x)=>
+        `<div class="chk focusable ${state.concerns.includes(t)?'sel':''}" onclick="toggleConcern('${t}',${x})"><span class="num">${x+1}</span><div class="box"></div><div>${t}</div></div>`).join('')}</div></div>`;
+  }
+  else if(s.type==='quiz'){
+    const ans=state.answers[s.id];
+    h=`<div class="eyebrow">${s.eyebrow}</div><div class="card"><div class="qrow"><div class="q">${s.q}</div><button class="speak focusable" onclick="speakScreen()">🔊 唸題</button></div><div class="opts">
+      ${s.options.map((o,x)=>{let c='opt focusable';
+        if(ans!==undefined){if(o.correct)c+=' correct'; else if(state._picked===x)c+=' wrong';}
+        const tag=ans!==undefined?(o.correct?'<span class="tag">✓ 正確</span>':(state._picked===x?'<span class="tag">再想想</span>':'')):'';
+        return `<button class="${c}" onclick="answer('${s.id}',${x},${o.correct})"><span class="num">${x+1}</span><span>${o.t}</span>${tag}</button>`;}).join('')}</div>
+      <div class="feedback ${ans===true?'good show':ans===false?'tip show':''}">${ans===true?s.good:s.tip}</div></div>`;
+  }
+  else if(s.type==='compare'){
+    h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p><div class="compare">
+        <div class="col pdcol"><h3>腹膜透析 PD</h3><ul><li>多在家中／工作場所自己進行</li><li>時間較彈性，可配合生活</li><li>不需反覆扎針</li><li>飲食、水分限制相對較寬</li><li>需要每天換液、學習操作</li><li>家裡要有放器材的空間</li></ul></div>
+        <div class="col hdcol"><h3>血液透析 HD</h3><ul><li>多在醫院／診所進行</li><li>一週固定幾次、每次約 4 小時</li><li>需建立血管通路、會扎針</li><li>飲食、水分需較嚴格控制</li><li>由醫護操作，自己負擔較少</li><li>作息需配合洗腎時間</li></ul></div></div>
+      <div class="feedback tip show">兩種都能好好生活。重點是哪一種比較貼合「你的日子」 — 下一頁請選出你最在意的事。</div>`;
+  }
+  else if(s.type==='values'){
+    h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p><div class="values">${s.items.map((t,x)=>{const n=state.values.indexOf(t);
+        return `<div class="vchip focusable ${n>=0?'sel':''}" onclick="toggleValue('${t}',${x})"><span class="rank">${n>=0?n+1:''}</span><span class="num">${x+1}</span>${t}</div>`;}).join('')}</div>
+      <div class="hint">這題沒有對錯，依你的感覺選就好。已選 ${state.values.length} / 3 項${state.values.length>=3?'　✓ 可進入下一步':''}</div>`;
+  }
+  else if(s.type==='leaning'){
+    const o=[['pd','我比較想了解／傾向 腹膜透析 PD'],['hd','我比較想了解／傾向 血液透析 HD'],['undecided','還沒決定，想再跟護理師談談']];
+    h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p>
+      <div class="opts">${o.map((x,idx)=>`<button class="opt focusable ${state.leaning===x[0]?'sel':''}" onclick="setLean('${x[0]}')"><span class="num">${idx+1}</span><span>${x[1]}</span></button>`).join('')}</div>
+      <div class="card"><div class="q">還有特別想問護理師的嗎？（可複選）</div><div class="checklist">${['想知道哪種比較適合我','想了解費用','想知道家人要怎麼配合','想看看實際器材／環境','想聽聽其他病友的經驗'].map((t,x)=>
+        `<div class="chk focusable ${state.asks.includes(t)?'sel':''}" onclick="toggleAsk('${t}',${x})"><span class="num">${x+1}</span><div class="box"></div><div>${t}</div></div>`).join('')}</div></div>`;
+  }
+  else if(s.type==='summary'){ h=summaryHTML(); }
+
+  stage.innerHTML=h;
+  if(s.id==='welcome'){ document.getElementById('nameIn').addEventListener('input',e=>state.name=e.target.value); }
+  updateNext(); collectFocus(); applyFocus(); window.scrollTo(0,0); maybeSpeak(s);
+}
+
+function videoBlock(key){ const v=VIDEOS[key];
+  const id = (lang==='tai' && v.vimeo_tw) ? v.vimeo_tw : v.vimeo;
+  if(id){ const url=`https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0&dnt=1`;
+    return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`; }
+  const langTag = lang==='tai' ? '台語' : '國語';
+  return `<div class="video"><div class="vstage"><button class="playbtn focusable" onclick="simPlay(this)">▶</button>
+    <div class="label">${v.label}</div><small>影片插槽（${langTag}・示意）— 嘉基置入影片後即可播放</small></div></div>`;
+}
+function simPlay(el){ el.textContent=el.textContent==='▶'?'⏸':'▶'; }
+
+function answer(id,x,c){ state.answers[id]=!!c; state._picked=x; state._focus='next'; render(); }
+function toggleConcern(t,x){ const a=state.concerns; a.includes(t)?a.splice(a.indexOf(t),1):a.push(t); state._focus='item'+x; render(); }
+function toggleAsk(t,x){ const a=state.asks; a.includes(t)?a.splice(a.indexOf(t),1):a.push(t); state._focus='item'+x; render(); }
+function toggleValue(t,x){ const a=state.values,k=a.indexOf(t); if(k>=0)a.splice(k,1); else if(a.length<3)a.push(t); state._focus='item'+x; render(); }
+function setLean(v){ state.leaning=v; state._focus='next'; render(); }
+
+function updateNext(){ const s=steps[i],btn=document.getElementById('nextBtn'); btn.disabled=false;
+  btn.textContent=i===0?'開始 ▶':(steps[i+1]&&steps[i+1].type==='summary'?'完成並產生摘要 ▶':'下一步 ▶');
+  if(s.type==='quiz'&&state.answers[s.id]===undefined){btn.disabled=true; btn.textContent='請先作答';}
+  if(s.type==='values'&&state.values.length<3){btn.disabled=true; btn.textContent=`再選 ${3-state.values.length} 項`;}
+  if(s.type==='leaning'&&!state.leaning){btn.disabled=true; btn.textContent='請先選一個';}
+  if(s.type==='summary'){btn.style.display='none'; document.getElementById('backBtn').textContent='◀ 重看內容';}
+  else{btn.style.display='inline-block'; document.getElementById('backBtn').textContent='◀ 上一步';}
+}
+function next(){ if(i<steps.length-1){state._picked=undefined; state._focus='first'; i++; render();} }
+function prev(){ if(i>0){state._picked=undefined; state._focus='first'; i--; render();} }
+
+/* 遙控器/鍵盤焦點（電視用；手機可忽略） */
+let focusables=[], kf=0;
+function collectFocus(){ const stage=document.getElementById('stage');
+  focusables=[...stage.querySelectorAll('.focusable')];
+  const nb=document.getElementById('nextBtn'),bb=document.getElementById('backBtn');
+  if(nb.style.display!=='none'&&!nb.disabled)focusables.push(nb);
+  if(bb.style.visibility!=='hidden')focusables.push(bb);
+  let t=0;
+  if(state._focus==='next'){const idx=focusables.indexOf(document.getElementById('nextBtn')); t=idx>=0?idx:0;}
+  else if(typeof state._focus==='string'&&state._focus.startsWith('item')) t=Math.min(parseInt(state._focus.slice(4)),focusables.length-1);
+  kf=Math.max(0,Math.min(t,focusables.length-1));
+}
+function applyFocus(){ focusables.forEach(el=>el.classList.remove('kfocus'));
+  const el=focusables[kf]; if(el){el.classList.add('kfocus'); if(el.tagName!=='INPUT')el.focus({preventScroll:false});} }
+function moveFocus(d){ if(!focusables.length)return; kf=(kf+d+focusables.length)%focusables.length; applyFocus(); }
+document.addEventListener('keydown',e=>{ const k=e.key;
+  if(k==='ArrowDown'){e.preventDefault();moveFocus(1);}
+  else if(k==='ArrowUp'){e.preventDefault();moveFocus(-1);}
+  else if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();const b=document.getElementById('nextBtn'); if(b.style.display!=='none'&&!b.disabled)next();}
+  else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
+  else if(k==='Enter'||k===' '){const el=focusables[kf]; if(el&&el.tagName!=='INPUT'){e.preventDefault();el.click();}}
+  else if(/^[1-9]$/.test(k)){const items=[...document.getElementById('stage').querySelectorAll('.opt,.chk,.vchip')]; const n=parseInt(k)-1; if(items[n]){e.preventDefault();items[n].click();}}
+});
+
+function leanText(){ return ({pd:'傾向 腹膜透析 PD',hd:'傾向 血液透析 HD',undecided:'尚未決定'})[state.leaning]||'未填'; }
+function summaryHTML(){
+  const wrong=steps.filter(s=>s.type==='quiz'&&state.answers[s.id]===false).map(s=>s.key);
+  const okk=steps.filter(s=>s.type==='quiz'&&state.answers[s.id]===true).map(s=>s.key);
+  const cls=({pd:'pd',hd:'hd',undecided:'un'})[state.leaning]||'un';
+  const n=new Date(), ts=`${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+  return `<div class="summary"><div class="head"><b>護理師確認單　給最後 10 分鐘的對話</b>
+      <span>${state.name?('病人：'+state.name+'　'):''}完成時間：${ts}　語言：${lang==='guo'?'國語':'台語'}</span></div>
+    <div class="srow"><div class="k">目前傾向</div><span class="lean ${cls}">${leanText()}</span></div>
+    <div class="srow"><div class="k">最在意的事（依序）</div>${state.values.length?state.values.map((v,x)=>`<span class="pill">${x+1}. ${v}</span>`).join(''):'<span class="hint">未選</span>'}</div>
+    <div class="srow"><div class="k">需要補強的觀念（優先談這幾點）</div>${wrong.length?wrong.map(w=>`<div class="gap"><div class="ic">!</div><div><b>${w}</b> — 病人理解尚不清楚，建議重點再確認</div></div>`).join(''):'<div class="gap okrow"><div class="ic">✓</div><div>基本觀念皆答對，可直接進入決策對話</div></div>'}${okk.length?`<div style="margin-top:10px" class="hint">已理解：${okk.join('、')}</div>`:''}</div>
+    <div class="srow"><div class="k">病人想多了解的擔心</div>${state.concerns.length?state.concerns.map(c=>`<span class="pill">${c}</span>`).join(''):'<span class="hint">無特別勾選</span>'}</div>
+    <div class="srow"><div class="k">病人想問的問題</div>${state.asks.length?state.asks.map(a=>`<div class="ask">${a}</div>`).join(''):'<span class="hint">無特別勾選</span>'}</div></div>
+  <div class="toolbar">
+    <button class="btn primary focusable" onclick="copySummary()">📋 複製摘要文字（傳給診間 LINE）</button>
+    <button class="btn ghost focusable" onclick="window.print()">🖨 列印 / 存 PDF</button>
+    <button class="btn ghost focusable" onclick="restart()">換下一位（清空重來）</button>
+  </div>
+  <textarea id="sumText" readonly></textarea>
+  <p class="hint">※ 資料僅存在本次畫面，重新整理或換人即清除。摘要不含身分證等資料，僅作為和護理師討論用。</p>`;
+}
+function buildSummaryText(){
+  const wrong=steps.filter(s=>s.type==='quiz'&&state.answers[s.id]===false).map(s=>s.key);
+  return ['【腎臟治療衛教｜病人摘要】',
+    state.name?('稱呼：'+state.name):null,
+    '目前傾向：'+leanText(),
+    '最在意：'+(state.values.length?state.values.map((v,x)=>`${x+1}.${v}`).join('、'):'未選'),
+    '需補強觀念：'+(wrong.length?wrong.join('、'):'皆答對'),
+    '想了解的擔心：'+(state.concerns.length?state.concerns.join('、'):'無'),
+    '想問的問題：'+(state.asks.length?state.asks.join('、'):'無'),
+  ].filter(Boolean).join('\n');
+}
+function copySummary(){ const ta=document.getElementById('sumText'); ta.style.display='block'; ta.value=buildSummaryText();
+  ta.focus(); ta.select(); ta.setSelectionRange(0,99999);
+  let done=false; try{ done=document.execCommand('copy'); }catch(e){}
+  if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>toast('已複製，可貼到 LINE 傳給診間')).catch(()=>toast(done?'已複製':'請長按下方文字框複製')); }
+  else toast(done?'已複製，可貼到 LINE':'請長按下方文字框複製'); }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function restart(){ Object.assign(state,{name:"",answers:{},values:[],concerns:[],asks:[],leaning:null,_picked:undefined,_focus:'first'}); i=0; render(); }
+
+/* 隨機打亂每題選項順序（避免「正確答案都在第一個」） */
+function shuffle(a){ for(let j=a.length-1;j>0;j--){ const r=Math.floor(Math.random()*(j+1)); const t=a[j]; a[j]=a[r]; a[r]=t; } }
+steps.forEach(s=>{ if(s.type==='quiz') shuffle(s.options); });
+
+/* ── 語音朗讀（國語可用瀏覽器語音；台語多半無語音，靠院方錄音） ── */
+let autoRead=false, voices=[];
+function loadVoices(){ try{ voices=window.speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; } }
+if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
+function pickVoice(){
+  const pref = lang==='tai' ? ['nan','zh-tw-hant-nan','hak'] : ['zh-tw','zh-hk','cmn','zh-cn','zh'];
+  for(const p of pref){ const v=voices.find(x=>(x.lang||'').toLowerCase().startsWith(p)); if(v) return v; }
+  return null;
+}
+function stepSpeech(s){ if(!s) s=steps[i];
+  if(s.type==='welcome') return '歡迎。花二十分鐘，了解適合你的腎臟治療。';
+  if(s.type==='quiz') return s.q+'。'+s.options.map((o,x)=>`第${x+1}，${o.t}`).join('。')+'。';
+  if(s.type==='values') return s.title+'。'+s.lead+'這題沒有對錯。';
+  if(s.type==='summary') return '已經完成，請把摘要拿給護理師。';
+  if(s.title) return s.title+'。'+(s.lead||'');
+  return '';
+}
+function speak(text){
+  if(!('speechSynthesis' in window)||!text) return;
+  window.speechSynthesis.cancel();
+  let v=pickVoice(), fallback=false;
+  if(!v && lang==='tai'){ const zh=voices.find(x=>(x.lang||'').toLowerCase().startsWith('zh')); if(zh){ v=zh; fallback=true; } }
+  const u=new SpeechSynthesisUtterance(text);
+  if(v){ u.voice=v; u.lang=v.lang; } else u.lang='zh-TW';
+  u.rate=0.9; u.pitch=1;
+  window.speechSynthesis.speak(u);
+  if(fallback && !state._twWarned){ state._twWarned=true; toast('此裝置無台語語音，暫以國語朗讀；台語建議用院方錄音'); }
+}
+function speakScreen(){ speak(stepSpeech(steps[i])); }
+function maybeSpeak(s){ if(autoRead) speak(stepSpeech(s)); }
+function toggleRead(){ autoRead=!autoRead;
+  const b=document.getElementById('readBtn'); b.textContent='🔊 朗讀：'+(autoRead?'開':'關'); b.classList.toggle('on',autoRead);
+  if(autoRead) speakScreen(); else if('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+render();
+</script>
+</body>
+</html>
