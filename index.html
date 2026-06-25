@@ -118,18 +118,7 @@
   .capd-instr{font-size:20px; margin:12px 0; line-height:1.6;}
   .capd-do{background:var(--gold-soft); border-left:6px solid var(--gold); padding:14px; border-radius:12px; font-size:18px; margin:10px 0;}
   .capd-btn{width:100%; font-size:21px; font-weight:800; background:var(--pd); color:#fff; border:none; border-radius:14px; padding:18px; cursor:pointer; font-family:inherit;}
-  /* CAPD 插畫動畫：藥水流動、袋子升降、提示閃動 */
-  .capd-svg .flow{stroke-dasharray:9 8; animation:capdFlow .9s linear infinite;}
-  @keyframes capdFlow{to{stroke-dashoffset:-17;}}
-  .capd-svg .lvl-fill{transform-box:fill-box; transform-origin:50% 100%; animation:capdFill 2.6s ease-in-out infinite;}
-  @keyframes capdFill{0%{transform:scaleY(.12);}100%{transform:scaleY(1);}}
-  .capd-svg .lvl-drop{transform-box:fill-box; transform-origin:50% 100%; animation:capdDrop 2.6s ease-in-out infinite;}
-  @keyframes capdDrop{0%{transform:scaleY(1);}100%{transform:scaleY(.16);}}
-  .capd-svg .pulse{animation:capdPulse 1.3s ease-in-out infinite;}
-  @keyframes capdPulse{0%,100%{opacity:.35;}50%{opacity:1;}}
-  .capd-svg .snap{transform-box:fill-box; animation:capdSnap 1.8s ease-in-out infinite;}
-  @keyframes capdSnap{0%,100%{transform:translateX(-10px);}45%,62%{transform:translateX(0);}}
-  @media (prefers-reduced-motion:reduce){.capd-svg *{animation:none!important;}}
+  .capd-svg{aspect-ratio:4/3; object-fit:cover;}
 
   .kfocus{outline:5px solid var(--brand); outline-offset:3px; box-shadow:0 0 0 8px rgba(203,90,80,.18);}
 
@@ -242,19 +231,19 @@ function setLang(l){ lang=l;
 const CAPD=[
   { short:'洗手無菌', t:'第一步：洗手與無菌準備',
     d:'戴上口罩、用肥皂把手洗乾淨並擦乾。準備乾淨的桌面，檢查藥水袋是否清澈、沒有破損或漏液。',
-    do:'請依照護理師示範，戴口罩、洗手。', svg:svgClean() },
+    do:'請依照護理師示範，戴口罩、洗手。', svg:'<img class="capd-svg" src="img/capd-1.png" alt="戴口罩、洗淨雙手">' },
   { short:'接管', t:'第二步：接管',
     d:'把透析液的管路接頭，和你腹部導管的接頭小心接在一起。全程不要用手碰到接口，保持無菌。',
-    do:'請拿起體驗圍裙上的導管，試著把管路接上。', svg:svgConnect() },
+    do:'請拿起體驗圍裙上的導管，試著把管路接上。', svg:'<img class="capd-svg" src="img/capd-2.png" alt="把管路接上腹部導管">' },
   { short:'引流', t:'第三步：引流（先把舊的放出）',
     d:'打開開關，讓肚子裡停留過的舊透析液，先流到下方的引流袋，直到流乾淨。',
-    do:'把空袋放低，看著練習藥水往下流出。', svg:svgDrain() },
+    do:'把空袋放低，看著練習藥水往下流出。', svg:'<img class="capd-svg" src="img/capd-3.png" alt="舊藥水往下流入引流袋">' },
   { short:'注入', t:'第四步：注入（再灌入新的）',
     d:'把新的透析液袋掛高，打開開關，讓乾淨的藥水緩緩流進腹腔。',
-    do:'把藥水袋掛高，看著藥水緩緩流入。', svg:svgInfuse() },
+    do:'把藥水袋掛高，看著藥水緩緩流入。', svg:'<img class="capd-svg" src="img/capd-4.png" alt="新藥水從高處流入腹腔">' },
   { short:'留置', t:'第五步：留置與分離',
     d:'關上開關、把管路分開並蓋好。藥水會留在腹腔停留幾個小時，這段時間你可以正常生活、做自己的事。',
-    do:'關開關、蓋好接頭。體驗完成！', svg:svgDwell() },
+    do:'關開關、蓋好接頭。體驗完成！', svg:'<img class="capd-svg" src="img/capd-5.png" alt="藥水留腹中、照常生活">' },
 ];
 
 const steps=[
@@ -374,65 +363,7 @@ function videoBlock(key){ const v=VIDEOS[key];
 }
 function simPlay(el){ el.textContent=el.textContent==='▶'?'⏸':'▶'; }
 
-/* ── CAPD 友善插畫（會動） ── */
-function svgFrame(inner){ return `<svg class="capd-svg" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg" role="img">${inner}</svg>`; }
-/* 病人上半身＋肚子＋左側導管口(226,126) */
-function pdBody(fluid){ fluid=fluid||'#EAF1EF'; return `
-  <circle cx="262" cy="42" r="19" fill="#F6D9C6" stroke="#C98E73" stroke-width="3"/>
-  <path d="M224 152 Q221 84 262 84 Q303 84 300 152 Z" fill="#F4EFE9" stroke="#2A7F74" stroke-width="4"/>
-  <ellipse cx="262" cy="126" rx="38" ry="32" fill="${fluid}" stroke="#2A7F74" stroke-width="3"/>
-  <circle cx="226" cy="126" r="7" fill="#CB5A50"/>`; }
-function svgClean(){ return svgFrame(`
-  <path d="M150 26 h46 v12 h-15 v18" fill="none" stroke="#9fb3b0" stroke-width="7" stroke-linecap="round"/>
-  <g class="pulse"><circle cx="181" cy="74" r="4" fill="#7FB7C9"/><circle cx="181" cy="90" r="3.2" fill="#7FB7C9"/><circle cx="181" cy="103" r="2.6" fill="#7FB7C9"/></g>
-  <ellipse cx="152" cy="130" rx="34" ry="21" fill="#F6D9C6" stroke="#C98E73" stroke-width="3"/>
-  <ellipse cx="208" cy="130" rx="34" ry="21" fill="#F6D9C6" stroke="#C98E73" stroke-width="3"/>
-  <g class="pulse"><circle cx="150" cy="122" r="7" fill="#fff" stroke="#aacbd4" stroke-width="2"/><circle cx="173" cy="134" r="5" fill="#fff" stroke="#aacbd4" stroke-width="2"/><circle cx="190" cy="120" r="6" fill="#fff" stroke="#aacbd4" stroke-width="2"/></g>
-  <g transform="translate(292,58)">
-    <path d="M-26 0 q26 17 52 0 v17 q-26 16 -52 0 Z" fill="#E3F0EE" stroke="#2A7F74" stroke-width="3"/>
-    <path d="M-26 6 H26 M-26 12 H26" stroke="#2A7F74" stroke-width="2"/>
-    <path d="M-26 1 q-13 2 -13 11 M26 1 q13 2 13 11" fill="none" stroke="#2A7F74" stroke-width="3"/>
-  </g>
-  <text x="180" y="178" text-anchor="middle" font-size="15" fill="#2A7F74" font-weight="bold">戴口罩・洗淨雙手</text>`); }
-function svgConnect(){ return svgFrame(`
-  ${pdBody('#EAF1EF')}
-  <path d="M226 126 H150" fill="none" stroke="#cfe0db" stroke-width="12" stroke-linecap="round"/>
-  <rect x="138" y="115" width="20" height="22" rx="4" fill="#CDDFD7" stroke="#2A7F74" stroke-width="3"/>
-  <g class="snap">
-    <path d="M40 126 H120" fill="none" stroke="#cfe0db" stroke-width="12" stroke-linecap="round"/>
-    <rect x="116" y="115" width="20" height="22" rx="4" fill="#E3F0EE" stroke="#2A7F74" stroke-width="3"/>
-  </g>
-  <path d="M124 92 a12 12 0 0 1 24 0 v6" fill="none" stroke="#CB5A50" stroke-width="4"/>
-  <text x="136" y="84" text-anchor="middle" font-size="14" fill="#CB5A50" font-weight="bold">勿觸接口</text>
-  <text x="180" y="184" text-anchor="middle" font-size="15" fill="#2A7F74" font-weight="bold">把新管路接上導管</text>`); }
-function svgDrain(){ return svgFrame(`
-  ${pdBody('#F1E6BD')}
-  <rect x="54" y="150" width="72" height="54" rx="9" fill="#fff" stroke="#B7892F" stroke-width="4"/>
-  <rect class="lvl-fill" x="59" y="155" width="62" height="44" rx="5" fill="#E6CE84"/>
-  <path d="M226 126 C172 126 116 130 90 152" fill="none" stroke="#cfe0db" stroke-width="12" stroke-linecap="round"/>
-  <path d="M226 126 C172 126 116 130 90 152" fill="none" stroke="#D6A93A" stroke-width="6" stroke-linecap="round" class="flow"/>
-  <path d="M150 92 l0 26 m-8 -9 l8 9 l8 -9" stroke="#CB5A50" stroke-width="4" fill="none" stroke-linecap="round" class="pulse"/>
-  <text x="150" y="84" text-anchor="middle" font-size="15" fill="#CB5A50" font-weight="bold">先排出舊藥水</text>
-  <text x="90" y="184" text-anchor="middle" font-size="13" fill="#7a5e16" font-weight="bold">舊藥水</text>`); }
-function svgInfuse(){ return svgFrame(`
-  <line x1="90" y1="6" x2="90" y2="28" stroke="#9aa" stroke-width="3"/>
-  <rect x="54" y="28" width="72" height="54" rx="9" fill="#fff" stroke="#2A7F74" stroke-width="4"/>
-  <rect class="lvl-drop" x="59" y="33" width="62" height="44" rx="5" fill="#CFE6EC"/>
-  ${pdBody('#D7EAF0')}
-  <path d="M90 82 C90 132 168 126 226 126" fill="none" stroke="#cfe0db" stroke-width="12" stroke-linecap="round"/>
-  <path d="M90 82 C90 132 168 126 226 126" fill="none" stroke="#5FAEC4" stroke-width="6" stroke-linecap="round" class="flow"/>
-  <path d="M196 126 l24 0 m-9 -8 l9 8 l-9 8" stroke="#CB5A50" stroke-width="4" fill="none" stroke-linecap="round" class="pulse"/>
-  <text x="150" y="104" text-anchor="middle" font-size="15" fill="#2A7F74" font-weight="bold">再灌入新藥水</text>
-  <text x="90" y="60" text-anchor="middle" font-size="13" fill="#236" font-weight="bold">新藥水</text>`); }
-function svgDwell(){ return svgFrame(`
-  ${pdBody('#BFE0D8')}
-  <text x="262" y="130" text-anchor="middle" font-size="13" fill="#1f6b5f" font-weight="bold">藥水留腹中</text>
-  <circle cx="96" cy="112" r="46" fill="#fff" stroke="#CB5A50" stroke-width="5"/>
-  <circle cx="96" cy="112" r="4" fill="#CB5A50"/>
-  <g><line x1="96" y1="112" x2="96" y2="82" stroke="#CB5A50" stroke-width="5" stroke-linecap="round"/>
-     <animateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 96 112" to="360 96 112" dur="6s" repeatCount="indefinite"/></g>
-  <line x1="96" y1="112" x2="120" y2="112" stroke="#CB5A50" stroke-width="4" stroke-linecap="round"/>
-  <text x="180" y="190" text-anchor="middle" font-size="14" fill="#2A7F74" font-weight="bold">留置數小時・照常生活</text>`); }
+/* ── CAPD 五步驟示意圖：改用 Gemini 生成的插畫 img/capd-1..5.png（見上方 CAPD 陣列） ── */
 
 function capdNext(){ if(state.capdStep<CAPD.length-1){ state.capdStep++; state._focus='first'; render(); } else { state._focus='first'; next(); } }
 
