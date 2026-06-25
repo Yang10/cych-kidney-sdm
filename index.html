@@ -107,8 +107,8 @@
 
   /* CAPD 步驟追蹤 */
   .tracker{display:flex; gap:7px; flex-wrap:wrap; margin:14px 0;}
-  .tchip{flex:1 1 0; min-width:78px; text-align:center; border:2px solid var(--line); border-radius:12px;
-    padding:9px 5px; font-size:14px; font-weight:700; color:var(--muted); background:#fff;}
+  .tchip{flex:1 1 0; min-width:54px; text-align:center; border:2px solid var(--line); border-radius:12px;
+    padding:9px 3px; font-size:13px; font-weight:700; color:var(--muted); background:#fff;}
   .tchip .tn{display:flex; width:26px; height:26px; margin:0 auto 4px; border-radius:50%;
     background:var(--brand-tint); color:var(--brand-deep); align-items:center; justify-content:center; font-weight:800;}
   .tchip.active{border-color:var(--pd); background:var(--pd-soft); color:var(--pd);} .tchip.active .tn{background:var(--pd); color:#fff;}
@@ -239,11 +239,14 @@ const CAPD=[
     d:'打開開關，讓肚子裡停留過的舊透析液，先流到下方的引流袋，直到流乾淨。',
     do:'把空袋放低，看著練習藥水往下流出。', svg:'<img class="capd-svg" src="img/capd-3.png" alt="舊藥水往下流入引流袋">' },
   { short:'注入', t:'第四步：注入（再灌入新的）',
-    d:'把新的透析液袋掛高，打開開關，讓乾淨的藥水緩緩流進腹腔。',
-    do:'把藥水袋掛高，看著藥水緩緩流入。', svg:'<img class="capd-svg" src="img/capd-4.png" alt="新藥水從高處流入腹腔">' },
-  { short:'留置', t:'第五步：留置與分離',
-    d:'關上開關、把管路分開並蓋好。藥水會留在腹腔停留幾個小時，這段時間你可以正常生活、做自己的事。',
-    do:'關開關、蓋好接頭。體驗完成！', svg:'<img class="capd-svg" src="img/capd-5.png" alt="藥水留腹中、照常生活">' },
+    d:'把新的透析液袋掛高，關掉引流那端、打開注入開關，讓乾淨的藥水順著管子緩緩流進肚子裡。',
+    do:'把藥水袋掛高，看著新藥水緩緩流入。', svg:'<img class="capd-svg" src="img/capd-4.png" alt="新藥水從高處流入腹腔">' },
+  { short:'分離管路', t:'第五步：分離管路（蓋上保護帽）',
+    d:'灌完後關上開關，把透析液的管路和你肚子上的導管小心分開，再接上新的「保護帽」把導管口蓋好，保持乾淨。',
+    do:'關開關、把管路分開，幫導管口蓋上新的保護帽。', svg:'<img class="capd-svg" src="img/capd-5.png" alt="分開管路、蓋上保護帽">' },
+  { short:'留置', t:'第六步：留置・照常生活',
+    d:'新藥水會留在肚子裡停留幾個小時慢慢作用。這段時間你可以正常上班、做家事、出門走走，時間到了再做下一次換液。',
+    do:'收好東西，繼續做你的事！體驗完成。', svg:'<img class="capd-svg" src="img/capd-6.png" alt="藥水留腹中、照常生活">' },
 ];
 
 const steps=[
