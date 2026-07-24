@@ -230,25 +230,24 @@ function setLang(l){ lang=l;
 
 /* ── CAPD 五步驟（無菌→接管→引流→注入→留置） ── */
 const CAPD=[
-  { short:'洗手無菌', t:'第一步：洗手與無菌準備',
-    d:'戴上口罩、用肥皂把手洗乾淨並擦乾。準備乾淨的桌面，檢查藥水袋是否清澈、沒有破損或漏液。',
-    do:'請依照護理師示範，戴口罩、洗手。', svg:'<img class="capd-svg" src="img/capd-1.png" alt="戴口罩、洗淨雙手">' },
-  { short:'接管', t:'第二步：接管',
+  { short:'接管', t:'第一步：接管',
     d:'把透析液的管路接頭，和你腹部導管的接頭小心接在一起。全程不要用手碰到接口，保持無菌。',
     do:'請拿起體驗圍裙上的導管，試著把管路接上。', svg:'<img class="capd-svg" src="img/capd-2.png" alt="把管路接上腹部導管">' },
-  { short:'引流', t:'第三步：引流（先把舊的放出）',
+  { short:'引流', t:'第二步：引流（先把舊的放出）',
     d:'打開開關，讓肚子裡停留過的舊透析液，先流到下方的引流袋，直到流乾淨。',
     do:'把空袋放低，看著練習藥水往下流出。', svg:'<img class="capd-svg" src="img/capd-3.png" alt="舊藥水往下流入引流袋">' },
-  { short:'注入', t:'第四步：注入（再灌入新的）',
+  { short:'注入', t:'第三步：注入（再灌入新的）',
     d:'把新的透析液袋掛高，關掉引流那端、打開注入開關，讓乾淨的藥水順著管子緩緩流進肚子裡。',
     do:'把藥水袋掛高，看著新藥水緩緩流入。', svg:'<img class="capd-svg" src="img/capd-4.png" alt="新藥水從高處流入腹腔">' },
-  { short:'分離管路', t:'第五步：分離管路（蓋上保護帽）',
+  { short:'分離', t:'第四步：分離管路（蓋上保護帽）',
     d:'灌完後關上開關，把透析液的管路和你肚子上的導管小心分開，再接上新的「保護帽」把導管口蓋好，保持乾淨。',
     do:'關開關、把管路分開，幫導管口蓋上新的保護帽。', svg:'<img class="capd-svg" src="img/capd-5.png" alt="分開管路、蓋上保護帽">' },
-  { short:'留置', t:'第六步：留置・照常生活',
-    d:'新藥水會留在肚子裡停留幾個小時慢慢作用。這段時間你可以正常上班、做家事、出門走走，時間到了再做下一次換液。',
-    do:'收好東西，繼續做你的事！體驗完成。', svg:'<img class="capd-svg" src="img/capd-6.png" alt="藥水留腹中、照常生活">' },
 ];
+/* 洗手與留置不做成互動步驟，改用文字＋語音帶過 */
+const CAPD_PRE = { t:'開始前：先洗手、戴口罩',
+  d:'先戴上口罩，用肥皂把手洗乾淨並擦乾。準備乾淨的桌面，檢查藥水袋清澈、沒有破損或漏液。準備好了我們就開始。' };
+const CAPD_POST = { t:'做完之後：藥水留置，照常生活',
+  d:'分開管路之後，新藥水會留在肚子裡停留幾個小時慢慢作用。這段時間你可以正常上班、做家事、出門走走，時間到了再做下一次換液。' };
 
 const steps=[
 { id:'welcome', type:'welcome' },
@@ -314,6 +313,7 @@ function render(){
   else if(s.type==='capd'){
     const cs=state.capdStep, st=CAPD[cs];
     h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1>
+      ${cs===0?`<div class="note"><b>🧼 ${CAPD_PRE.t}</b><br>${CAPD_PRE.d}</div>`:''}
       <div class="tracker">${CAPD.map((c,x)=>`<div class="tchip ${x<cs?'done':''} ${x===cs?'active':''}"><span class="tn">${x<cs?'✓':x+1}</span>${c.short}</div>`).join('')}</div>
       <div class="card center">
         <div class="stepbig">第 ${cs+1} 步 / 共 ${CAPD.length} 步</div>
@@ -324,7 +324,8 @@ function render(){
           <div class="capd-do">👉 ${st.do}</div>
           <button class="capd-btn focusable" onclick="capdNext()">${cs<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶'}</button>
         </div>
-      </div>`;
+      </div>
+      ${cs===CAPD.length-1?`<div class="note"><b>⏳ ${CAPD_POST.t}</b><br>${CAPD_POST.d}</div>`:''}`;
   }
   else if(s.type==='leaning'){
     const o=[['pd','體驗後我想選／想試試 腹膜透析（洗肚子）'],['more','對腹膜透析有興趣，但還想多了解'],['other','想了解其他治療（血液透析／移植等）']];
@@ -433,7 +434,10 @@ function stepSpeech(s){ if(!s)s=steps[i];
   if(s.type==='welcome') return '歡迎。認識腹膜透析，並親手體驗一次。';
   if(s.type==='four') return s.title+'。'+s.lead+'腹膜透析、血液透析、腎臟移植、保守安寧照護。';
   if(s.type==='quiz') return s.q+'。'+s.options.map((o,x)=>`第${x+1}，${o.t}`).join('。')+'。';
-  if(s.type==='capd'){ const st=CAPD[state.capdStep]; return st.t+'。'+st.d; }
+  if(s.type==='capd'){ const cs=state.capdStep, st=CAPD[cs];
+    let t=(cs===0? CAPD_PRE.t+'。'+CAPD_PRE.d+'　' : '') + st.t+'。'+st.d;
+    if(cs===CAPD.length-1) t+='　'+CAPD_POST.t+'。'+CAPD_POST.d;
+    return t; }
   if(s.type==='summary') return '已經完成，請把摘要拿給護理師。';
   if(s.title) return s.title+'。'+(s.lead||'');
   return ''; }
