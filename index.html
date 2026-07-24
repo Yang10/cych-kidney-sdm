@@ -214,8 +214,8 @@
 <script>
 /* ════════════ 影片設定：嘉基只改這裡 ════════════ */
 const VIDEOS = {
-  pd_intro: { label:"腹膜透析（洗肚子）：怎麼運作", vimeo:"378770445", vimeo_tw:"" },
-  pd_life:  { label:"腹膜透析病友的一天",        vimeo:"1123590816", vimeo_tw:"" },
+  // yt＝YouTube 影片編號（youtu.be/XXXX 的 XXXX）；vimeo＝Vimeo 編號。擇一填寫。
+  edu: { label:"腹膜透析完整解析（嘉基 顏正杰醫師）", yt:"DpGCm-MhRe0" },
 };
 /* ═══════════════════════════════════════════════ */
 
@@ -252,30 +252,13 @@ const CAPD=[
 const steps=[
 { id:'welcome', type:'welcome' },
 
-{ id:'options', type:'four', eyebrow:'你的選擇', title:'腎臟到末期，有四種治療可以選',
-  lead:'你的腎臟功能已經到了末期（前面已經認識過慢性腎臟病）。接下來需要選一種方式來「代替」腎臟的工作。常見有以下四種：' },
-
-{ id:'options_q', type:'quiz', eyebrow:'小確認', q:'下列哪一種治療，是「在家自己做」的？',
-  options:[{t:'腹膜透析（洗肚子）',correct:true},{t:'血液透析（洗血）',correct:false},{t:'腎臟移植',correct:false}],
-  good:'對。腹膜透析（洗肚子）多在家中或工作場所自己操作，時間較彈性。今天我們就來認識它。',
-  tip:'腹膜透析（洗肚子）多在家自己做；血液透析多到醫院、移植要等配對。今天先深入認識腹膜透析。', key:'腹膜透析的特色' },
-
-{ id:'pd_intro', type:'video', video:'pd_intro', eyebrow:'認識腹膜透析', title:'腹膜透析（洗肚子）：怎麼運作',
-  lead:'腹膜透析（洗肚子）有不少好處：在家就能做、時間彈性、不用一直扎針，多數人可以照常上班、帶孫、出門旅行。原理也很單純——利用你自己肚子裡的「腹膜」當過濾膜：把透析液灌進腹腔停留一段時間，廢物和水分滲過來，再把舊液放掉、換新的。步驟固定，學會就能自己上手。' },
-
-{ id:'pd_q', type:'quiz', eyebrow:'小確認', q:'腹膜透析（洗肚子）是用身體的哪個部位來過濾廢物？',
-  options:[{t:'肚子裡的腹膜',correct:true},{t:'手臂的血管',correct:false},{t:'腎臟本身',correct:false}],
-  good:'對。腹膜透析用自己的腹膜當濾膜，透過換液把廢物帶走。',
-  tip:'腹膜透析是用「腹膜」當過濾膜（不是血管、也不是腎臟）。', key:'腹膜透析原理' },
-
-{ id:'pd_life', type:'video_concern', video:'pd_life', eyebrow:'腹膜透析的生活', title:'腹膜透析病友的一天',
-  lead:'看看實際在做腹膜透析（洗肚子）的病友，生活是什麼樣子。看完後，選出你還想多了解的部分，等一下護理師會特別為你說明。',
-  items:['感染（腹膜炎）怎麼預防','導管平常怎麼照顧','我年紀大／眼睛不好，做得到嗎','家人能不能幫我','洗澡、生活會不會受影響','費用和健保給付'] },
+{ id:'edu', type:'video', video:'edu', eyebrow:'先看一段影片', title:'腹膜透析（洗肚子）完整解析',
+  lead:'由嘉基腎臟科顏正杰醫師說明：腎臟到末期有哪些選擇、腹膜透析（洗肚子）怎麼運作、和血液透析（洗血）要怎麼比較。看完影片後，我們會請你親手做一次換液體驗。' },
 
 { id:'capd', type:'capd', eyebrow:'親手體驗', title:'換液體驗：跟著做一次腹膜透析' },
 
-{ id:'leaning', type:'leaning', eyebrow:'最後一題', title:'認識並體驗之後，你的想法是？',
-  lead:'沒有對錯，也還可以改變。這只是讓護理師知道從哪裡跟你聊起。' },
+{ id:'qa', type:'leaning', eyebrow:'最後：有問題盡量問', title:'看完也親手做過了，你想問什麼？',
+  lead:'沒有對錯。勾選你想多了解的，等一下護理師會針對這些跟你說明。' },
 
 { id:'summary', type:'summary' },
 ];
@@ -288,7 +271,7 @@ function render(){
   document.getElementById('barFill').style.width=Math.round(i/(steps.length-1)*100)+'%';
   document.getElementById('barText').textContent = s.type==='summary'?'完成！把摘要給護理師'
       : s.type==='capd'?`換液體驗　第 ${state.capdStep+1} / ${CAPD.length} 步`
-      : `第 ${i} / ${MAIN} 步　約 8–10 分鐘`;
+      : `第 ${i} / ${MAIN} 步`;
   document.getElementById('backBtn').style.visibility=i===0?'hidden':'visible';
   let h='';
 
@@ -346,7 +329,7 @@ function render(){
     const o=[['pd','體驗後我想選／想試試 腹膜透析（洗肚子）'],['more','對腹膜透析有興趣，但還想多了解'],['other','想了解其他治療（血液透析／移植等）']];
     h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p>
       <div class="opts">${o.map((x,idx)=>`<button class="opt focusable ${state.leaning===x[0]?'sel':''}" onclick="setLean('${x[0]}')"><span class="num">${idx+1}</span><span>${x[1]}</span></button>`).join('')}</div>
-      <div class="card"><div class="q">還有特別想問護理師的嗎？（可複選）</div><div class="checklist">${['想知道腹膜透析適不適合我','想了解費用','想知道家人要怎麼配合','想再看一次操作','想了解其他治療'].map((t,x)=>
+      <div class="card"><div class="q">還有特別想問護理師的嗎？（可複選）</div><div class="checklist">${['感染（腹膜炎）怎麼預防','導管平常怎麼照顧','我年紀大／眼睛不好，做得到嗎','家人能不能幫我、要怎麼配合','洗澡、運動、生活會不會受影響','費用和健保給付','想再看一次換液操作','想了解其他治療（血液透析／移植）'].map((t,x)=>
         `<div class="chk focusable ${state.asks.includes(t)?'sel':''}" onclick="toggleAsk('${t}',${x})"><span class="num">${x+1}</span><div class="box"></div><div>${t}</div></div>`).join('')}</div></div>`;
   }
   else if(s.type==='summary'){ h=summaryHTML(); }
@@ -357,6 +340,8 @@ function render(){
 }
 
 function videoBlock(key){ const v=VIDEOS[key];
+  if(v.yt){ const url=`https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW`;
+    return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`; }
   const id=(lang==='tai'&&v.vimeo_tw)?v.vimeo_tw:v.vimeo;
   if(id){ const url=`https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0&dnt=1`;
     return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`; }
@@ -467,17 +452,13 @@ function toggleRead(){ autoRead=!autoRead; const b=document.getElementById('read
 /* 護理師摘要 */
 function leanText(){ return ({pd:'體驗後想選／想試 腹膜透析（洗肚子）',more:'對腹膜透析有興趣、想多了解',other:'想了解其他治療'})[state.leaning]||'未填'; }
 function summaryHTML(){
-  const wrong=steps.filter(s=>s.type==='quiz'&&state.answers[s.id]===false).map(s=>s.key);
-  const okk=steps.filter(s=>s.type==='quiz'&&state.answers[s.id]===true).map(s=>s.key);
   const cls=({pd:'pd',more:'more',other:'other'})[state.leaning]||'more';
   const done = state.capdStep>=CAPD.length-1;
   const n=new Date(), ts=`${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
   return `<div class="summary"><div class="head"><b>護理師確認單　給最後 10 分鐘的對話</b>
       <span>${state.name?('病人：'+state.name+'　'):''}完成時間：${ts}　語言：${lang==='guo'?'國語':'台語'}</span></div>
     <div class="srow"><div class="k">目前傾向</div><span class="lean ${cls}">${leanText()}</span></div>
-    <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?'<span class="pill">已完成五步驟體驗</span>':'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
-    <div class="srow"><div class="k">需要補強的觀念（優先談這幾點）</div>${wrong.length?wrong.map(w=>`<div class="gap"><div class="ic">!</div><div><b>${w}</b> — 病人理解尚不清楚，建議重點再確認</div></div>`).join(''):'<div class="gap okrow"><div class="ic">✓</div><div>基本觀念皆答對，可直接進入決策對話</div></div>'}${okk.length?`<div style="margin-top:10px" class="hint">已理解：${okk.join('、')}</div>`:''}</div>
-    <div class="srow"><div class="k">病人想多了解的擔心</div>${state.concerns.length?state.concerns.map(c=>`<span class="pill">${c}</span>`).join(''):'<span class="hint">無特別勾選</span>'}</div>
+    <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?`<span class="pill">已完成 ${CAPD.length} 步驟體驗</span>`:'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
     <div class="srow"><div class="k">病人想問的問題</div>${state.asks.length?state.asks.map(a=>`<div class="ask">${a}</div>`).join(''):'<span class="hint">無特別勾選</span>'}</div></div>
   <div class="toolbar">
     <button class="btn primary focusable" onclick="copySummary()">📋 複製摘要文字（傳給診間 LINE）</button>
@@ -488,13 +469,10 @@ function summaryHTML(){
   <p class="hint">※ 資料僅存在本次畫面，重新整理或換人即清除。摘要不含身分證等資料，僅作為和護理師討論用。</p>`;
 }
 function buildSummaryText(){
-  const wrong=steps.filter(s=>s.type==='quiz'&&state.answers[s.id]===false).map(s=>s.key);
   return ['【腹膜透析（洗肚子）認識與體驗｜病人摘要】',
     state.name?('稱呼：'+state.name):null,
     '目前傾向：'+leanText(),
     '換液體驗：'+(state.capdStep>=CAPD.length-1?'已完成':'未完成'),
-    '需補強觀念：'+(wrong.length?wrong.join('、'):'皆答對'),
-    '想了解的擔心：'+(state.concerns.length?state.concerns.join('、'):'無'),
     '想問的問題：'+(state.asks.length?state.asks.join('、'):'無'),
   ].filter(Boolean).join('\n');
 }
