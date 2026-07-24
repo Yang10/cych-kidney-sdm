@@ -278,9 +278,8 @@ function render(){
   if(s.type==='welcome'){
     h=`<div class="center"><div class="big-emoji">🩺</div><div class="eyebrow">歡迎</div>
       <h1>認識腹膜透析，並親手體驗一次</h1>
-      <p class="lead">用短片和幾個小問題認識腹膜透析（洗肚子），最後親手做一次換液體驗。大約 8–10 分鐘，過程不需要護理師在旁邊，完成後她會花 10 分鐘和你確認、回答問題。</p>
-      <div class="card" style="text-align:left"><div class="q">先告訴我們你的稱呼（可不填）</div>
-      <input class="name-input focusable" id="nameIn" placeholder="例如：王先生／陳阿姨" value="${state.name}">
+      <p class="lead">先看一段醫師說明的短片，認識腹膜透析（洗肚子），接著親手做一次換液體驗。完成後護理師會花 10 分鐘和你確認、回答問題。</p>
+      <div class="card" style="text-align:left">
       <div class="hint">隨時可暫停、回上一步重看。看不清楚可按右上角切換國語／台語、或開「🔊 朗讀」。</div></div></div>`;
   }
   else if(s.type==='four'){
@@ -337,7 +336,6 @@ function render(){
   else if(s.type==='summary'){ h=summaryHTML(); }
 
   stage.innerHTML=h;
-  if(s.id==='welcome'){ document.getElementById('nameIn').addEventListener('input',e=>state.name=e.target.value); }
   updateNext(); collectFocus(); applyFocus(); window.scrollTo(0,0); maybeSpeak(s);
 }
 
@@ -461,7 +459,7 @@ function summaryHTML(){
   const done = state.capdStep>=CAPD.length-1;
   const n=new Date(), ts=`${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
   return `<div class="summary"><div class="head"><b>護理師確認單　給最後 10 分鐘的對話</b>
-      <span>${state.name?('病人：'+state.name+'　'):''}完成時間：${ts}　語言：${lang==='guo'?'國語':'台語'}</span></div>
+      <span>完成時間：${ts}　語言：${lang==='guo'?'國語':'台語'}</span></div>
     <div class="srow"><div class="k">目前傾向</div><span class="lean ${cls}">${leanText()}</span></div>
     <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?`<span class="pill">已完成 ${CAPD.length} 步驟體驗</span>`:'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
     <div class="srow"><div class="k">病人想問的問題</div>${state.asks.length?state.asks.map(a=>`<div class="ask">${a}</div>`).join(''):'<span class="hint">無特別勾選</span>'}</div></div>
@@ -475,7 +473,6 @@ function summaryHTML(){
 }
 function buildSummaryText(){
   return ['【腹膜透析（洗肚子）認識與體驗｜病人摘要】',
-    state.name?('稱呼：'+state.name):null,
     '目前傾向：'+leanText(),
     '換液體驗：'+(state.capdStep>=CAPD.length-1?'已完成':'未完成'),
     '想問的問題：'+(state.asks.length?state.asks.join('、'):'無'),
