@@ -16,7 +16,8 @@
      YouTube 用 yt："youtu.be/DpGCm-MhRe0" → 只填 "DpGCm-MhRe0"。
      Vimeo 用 vimeo："vimeo.com/378770445" → 只填 "378770445"。
   ② 操作：手機用手指點。電視用遙控器 ▲▼ 移動、數字鍵直選、OK 確認、▶ 下一步。
-  ③ CAPD 體驗：五步驟畫面同步顯示「目前到哪一步」，搭配體驗圍裙＋練習藥水。
+  ③ CAPD 體驗：四步驟（接管/引流/注入/分離），每一步先播義大示範影片的對應剪段
+     （const CAPD_VIDEO 可調秒數；yt 留空則顯示插畫），搭配體驗圍裙＋練習藥水照著做。
   ④ 語音：右上角「🔊 朗讀」開啟自動唸；題目卡也有 🔊 重唸（台語建議用院方錄音）。
 ═══════════════════════════════════════════════════════════════════
 -->
@@ -120,6 +121,7 @@
   .capd-do{background:var(--gold-soft); border-left:6px solid var(--gold); padding:14px; border-radius:12px; font-size:18px; margin:10px 0;}
   .capd-btn{width:100%; font-size:21px; font-weight:800; background:var(--pd); color:#fff; border:none; border-radius:14px; padding:18px; cursor:pointer; font-family:inherit;}
   .capd-svg{aspect-ratio:4/3; object-fit:cover;}
+  .capd-clip{max-width:520px; margin:8px auto 4px;}
 
   .kfocus{outline:5px solid var(--brand); outline-offset:3px; box-shadow:0 0 0 8px rgba(203,90,80,.18);}
 
@@ -167,7 +169,7 @@
     .four .ocard .h{font-size:26px;} .four .ocard p{font-size:20px;} .four .ocard .ico{width:50px; height:50px; font-size:26px;}
     .note{font-size:23px;} .chk{font-size:25px;} .feedback{font-size:24px;}
     .tchip{font-size:19px; min-width:120px;} .tchip .tn{width:36px; height:36px; font-size:22px;}
-    .stepbig{font-size:30px;} .capd-svg{max-width:620px;} .capd-instr{font-size:30px;} .capd-do{font-size:25px;} .capd-btn{font-size:30px; padding:24px;}
+    .stepbig{font-size:30px;} .capd-svg{max-width:620px;} .capd-clip{max-width:720px;} .capd-instr{font-size:30px;} .capd-do{font-size:25px;} .capd-btn{font-size:30px; padding:24px;}
     .nav{padding:18px 40px;} .keyhint{display:block;} .btn{font-size:27px; padding:20px 40px;} .btn.primary{flex:none;}
     .toolbar{display:flex; flex-wrap:wrap;} .toolbar .btn{width:auto;}
     .summary .head b{font-size:30px;} .srow{padding:24px 30px;}
@@ -218,6 +220,11 @@ const VIDEOS = {
   // yt＝YouTube 影片編號（youtu.be/XXXX 的 XXXX）；vimeo＝Vimeo 編號。擇一填寫。
   edu: { label:"腹膜透析完整解析（嘉基 顏正杰醫師）", yt:"DpGCm-MhRe0" },
 };
+/* 換液體驗四步驟的示範影片剪段（義大醫院「連續性可攜帶型腹膜透析換液技術CAPD」youtu.be/fW8vD3uEWRA）
+   每步只播對應的那一小段，病人看完照著做。[開始秒數, 結束秒數]：
+   接管 4:53–5:13、引流(含秤重) 5:13–5:38、注入(含排氣) 5:38–6:32、分離(蓋保護帽、收腰帶) 6:46–7:18
+   秒數可自行微調；yt 留空("") 就改回顯示插畫。 */
+const CAPD_VIDEO = { yt:"fW8vD3uEWRA", clips:[ [293,313], [313,338], [338,392], [406,438] ] };
 /* ═══════════════════════════════════════════════ */
 
 let lang='guo';
@@ -316,7 +323,7 @@ function render(){
       <div class="tracker">${CAPD.map((c,x)=>`<div class="tchip ${x<cs?'done':''} ${x===cs?'active':''}"><span class="tn">${x<cs?'✓':x+1}</span>${c.short}</div>`).join('')}</div>
       <div class="card center">
         <div class="stepbig">第 ${cs+1} 步 / 共 ${CAPD.length} 步</div>
-        ${st.svg}
+        ${capdMedia(cs)}
         <div style="text-align:left">
           <div class="q">${st.t}</div>
           <div class="capd-instr">${st.d}</div>
@@ -350,6 +357,15 @@ function videoBlock(key){ const v=VIDEOS[key];
     <div class="label">${v.label}</div><small>影片插槽（${tag}・示意）— 嘉基置入影片後即可播放</small></div></div>`;
 }
 function simPlay(el){ el.textContent=el.textContent==='▶'?'⏸':'▶'; }
+
+/* 換液體驗每一步：優先播該步的示範影片剪段，沒設定就顯示插畫 */
+function capdMedia(cs){
+  const c=CAPD_VIDEO.clips[cs];
+  if(!CAPD_VIDEO.yt||!c) return CAPD[cs].svg;
+  const url=`https://www.youtube-nocookie.com/embed/${CAPD_VIDEO.yt}?start=${c[0]}&end=${c[1]}&rel=0&modestbranding=1&iv_load_policy=3&cc_lang_pref=zh-TW`;
+  return `<div class="video capd-clip"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+    <div class="hint">▶ 先看這段示範（約 ${c[1]-c[0]} 秒，義大醫院示範影片），再照著下面的說明做一次。看不清楚可以重播。</div>`;
+}
 
 /* ── CAPD 五步驟示意圖：改用 Gemini 生成的插畫 img/capd-1..5.png（見上方 CAPD 陣列） ── */
 
