@@ -14,8 +14,8 @@
   ① 置入嘉基影片：程式碼最上面 const VIDEOS = {...}
      YouTube 用 yt："youtu.be/DpGCm-MhRe0" → 只填 "DpGCm-MhRe0"。
      Vimeo 用 vimeo："vimeo.com/378770445" → 只填 "378770445"。留空("")顯示插槽示意。
-  ② 操作：手機用手指點。電視用遙控器 ▲▼ 移動、數字鍵直選、OK 確認、▶ 下一步。
-     （原「🔊 朗讀」語音功能已移除：每步都有示範影片與大字字幕，不再需要。）
+  ② 操作：手機／平板直接用手指點。
+     （原「電視遙控器」鍵盤操作與「🔊 朗讀」語音已移除：現場都用觸控裝置，且每步都有影片與大字字幕。）
   ③ CAPD 體驗：親手做「接管」與「分離」兩步（搭配體驗圍裙＋練習藥水），
      中間的引流＋注入合併成一段影片帶過（不用動手，傳達「就這麼簡單」）。
      每一步先播示範影片的對應剪段（const CAPD_VIDEO 可調秒數；留空則顯示插畫）。
@@ -103,20 +103,22 @@
     background:var(--brand-tint); color:var(--brand-deep); align-items:center; justify-content:center; font-weight:800;}
   .tchip.active{border-color:var(--pd); background:var(--pd-soft); color:var(--pd);} .tchip.active .tn{background:var(--pd); color:#fff;}
   .tchip.done{border-color:var(--pd); color:var(--pd);} .tchip.done .tn{background:var(--pd); color:#fff;}
-  .stepbig{font-size:22px; font-weight:800; color:var(--pd); margin:8px 0 2px;}
   .capd-svg{width:100%; max-width:440px; margin:8px auto; display:block; background:#fff; border:2px solid var(--line); border-radius:16px;}
+  .capd-grid{display:grid; gap:4px;}
+  .capd-note{font-size:16px; margin-top:14px;}
+  .qa-grid{display:grid; gap:12px;}
+  @media (min-width:900px){
+    .capd-grid{grid-template-columns:1.1fr 1fr; gap:24px; align-items:start;}
+    .capd-clip{max-width:none; margin:0;}
+  }
   .capd-instr{font-size:22px; margin:12px 0; line-height:1.6;}
   .capd-do{background:var(--gold-soft); border-left:6px solid var(--gold); padding:14px; border-radius:12px; font-size:20px; margin:10px 0;}
   .capd-btn{width:100%; font-size:23px; font-weight:800; background:var(--pd); color:#fff; border:none; border-radius:14px; padding:18px; cursor:pointer; font-family:inherit;}
   .capd-svg{aspect-ratio:4/3; object-fit:cover;}
   .capd-clip{max-width:520px; margin:8px auto 4px;}
 
-  .kfocus{outline:5px solid var(--brand); outline-offset:3px; box-shadow:0 0 0 8px rgba(203,90,80,.18);}
-
   .nav{position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1.5px solid var(--line);
-    padding:12px 16px; display:flex; align-items:center; gap:12px; padding-bottom:max(12px,env(safe-area-inset-bottom));}
-  .keyhint{display:none; flex:1; font-size:15px; color:var(--muted); line-height:1.5;}
-  .keyhint kbd{display:inline-block; background:var(--brand-tint); color:var(--brand-deep); border-radius:7px; padding:1px 9px; font-weight:800; font-family:inherit; margin:0 1px;}
+    padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:max(12px,env(safe-area-inset-bottom));}
   .btn{font-family:inherit; font-size:21px; font-weight:800; border-radius:13px; padding:15px 22px; cursor:pointer; border:none;}
   .btn.primary{background:var(--brand); color:#fff; flex:1;}
   .btn.primary:disabled{background:#e3c4bf; cursor:not-allowed;}
@@ -142,20 +144,26 @@
   .toolbar{display:grid; gap:10px; margin-top:16px;}
   .toolbar .btn{flex:none; width:100%;}
 
-  /* 大螢幕 / 電視 */
+  /* 大螢幕（衛教室電視/電腦）：目標是每一頁都不需捲動，滑鼠點選即可 */
   @media (min-width:1100px){
-    body{font-size:26px;} header{padding:18px 40px;} .brand b{font-size:28px;} .brand span{font-size:18px;}
-    .progress{padding:14px 40px 0;} main{padding:30px 40px 150px;} .stage{max-width:1000px;}
-    h1{font-size:42px;} p.lead{font-size:27px;} .eyebrow{font-size:20px;}
-    .q{font-size:30px;} .opt{font-size:28px; min-height:86px; padding:22px 26px; gap:20px;}
-    .num{width:50px; height:50px; font-size:26px; border-radius:12px;}
-    .four .ocard .h{font-size:26px;} .four .ocard p{font-size:20px;} .four .ocard .ico{width:50px; height:50px; font-size:26px;}
-    .note{font-size:23px;} .chk{font-size:25px;} .feedback{font-size:24px;}
-    .tchip{font-size:19px; min-width:120px;} .tchip .tn{width:36px; height:36px; font-size:22px;}
-    .stepbig{font-size:30px;} .capd-svg{max-width:620px;} .capd-clip{max-width:720px;} .capd-instr{font-size:30px;} .capd-do{font-size:25px;} .capd-btn{font-size:30px; padding:24px;}
-    .nav{padding:18px 40px;} .keyhint{display:block;} .btn{font-size:27px; padding:20px 40px;} .btn.primary{flex:none;}
+    body{font-size:21px;} header{padding:10px 40px;} .brand b{font-size:24px;} .brand span{font-size:15px;}
+    .progress{padding:8px 40px 0;} main{padding:14px 40px 96px;} .stage{max-width:1060px;}
+    h1{font-size:28px; margin:4px 0 2px;} p.lead{font-size:20px; margin:6px 0;} .eyebrow{font-size:17px;}
+    .q{font-size:24px;} .opt{font-size:22px; min-height:70px; padding:16px 22px; gap:16px;}
+    .num{width:40px; height:40px; font-size:20px; border-radius:10px;}
+    .four .ocard .h{font-size:22px;} .four .ocard p{font-size:17px;} .four .ocard .ico{width:42px; height:42px; font-size:22px;}
+    .note{font-size:19px;} .chk{font-size:20px;} .feedback{font-size:20px;}
+    .tracker{margin:10px 0;} .tchip{font-size:16px; min-width:100px;} .tchip .tn{width:30px; height:30px; font-size:18px;}
+    .capd-svg{max-width:620px;} .capd-instr{font-size:22px; margin:10px 0;} .capd-do{font-size:20px;} .capd-btn{font-size:24px; padding:16px;}
+    .nav{padding:12px 40px;} .btn{font-size:22px; padding:14px 32px;} .btn.primary{flex:none;}
     .toolbar{display:flex; flex-wrap:wrap;} .toolbar .btn{width:auto;}
-    .summary .head b{font-size:30px;} .srow{padding:24px 30px;}
+    .summary .head b{font-size:24px;} .srow{padding:14px 24px;}
+    /* 電視一屏內看完：影片高度依視窗高度計算、QA 與勾選清單改欄狀 */
+    .video{width:min(100%, calc((100vh - 380px) * 16 / 9)); margin-left:auto; margin-right:auto;}
+    .capd-clip{width:min(100%, calc((100vh - 470px) * 16 / 9)); margin-left:auto; margin-right:auto;}
+    .checklist{grid-template-columns:1fr 1fr; gap:12px;}
+    .qa-grid{grid-template-columns:1fr 1.25fr; gap:22px; align-items:start;}
+    .qa-grid .card{margin:0;}
   }
   @media (min-width:720px){ .four{grid-template-columns:1fr 1fr;} }
   @media (max-width:520px){ .four{grid-template-columns:1fr;} }
@@ -183,7 +191,6 @@
 <main><div class="stage" id="stage"></div></main>
 
 <div class="nav">
-  <div class="keyhint">遙控器：<kbd>▲</kbd><kbd>▼</kbd> 移動　<kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 直接選　<kbd>OK</kbd> 確認　<kbd>▶</kbd> 下一步　<kbd>◀</kbd> 上一步</div>
   <button class="btn ghost" id="backBtn" onclick="prev()">◀ 上一步</button>
   <button class="btn primary" id="nextBtn" onclick="next()">開始 ▶</button>
 </div>
@@ -286,33 +293,46 @@ function render(){
   else if(s.type==='capd'){
     const cs=state.capdStep, st=CAPD[cs];
     h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1>
-      ${cs===0?`<div class="note"><b>🧼 ${CAPD_PRE.t}</b><br>${CAPD_PRE.d}</div>`:''}
       <div class="tracker">${CAPD.map((c,x)=>`<div class="tchip ${x<cs?'done':''} ${x===cs?'active':''}"><span class="tn">${x<cs?'✓':x+1}</span>${c.short}</div>`).join('')}</div>
-      <div class="card center">
-        <div class="stepbig">第 ${cs+1} 步 / 共 ${CAPD.length} 步</div>
-        ${capdMedia(cs)}
-        <div style="text-align:left">
-          <div class="q">${st.t}</div>
-          <div class="capd-instr">${st.d}</div>
-          <div class="capd-do">${st.watch?'💡':'👉'} ${st.do}</div>
-          <button class="capd-btn focusable" onclick="capdNext()">${st.watch?'我看完了 ▶':(cs<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶')}</button>
+      <div class="card">
+        <div class="capd-grid">
+          <div class="center">${capdMedia(cs)}</div>
+          <div style="text-align:left">
+            <div class="q">${st.t}</div>
+            <div class="capd-instr">${st.d}</div>
+            <div class="capd-do">${st.watch?'💡':'👉'} ${st.do}</div>
+            <button class="capd-btn focusable" onclick="capdNext()">${st.watch?'我看完了 ▶':(cs<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶')}</button>
+            ${cs===0?`<div class="note capd-note"><b>🧼 ${CAPD_PRE.t}</b>　${CAPD_PRE.d}</div>`:''}
+            ${cs===CAPD.length-1?`<div class="note capd-note"><b>⏳ ${CAPD_POST.t}</b>　${CAPD_POST.d}</div>`:''}
+          </div>
         </div>
-      </div>
-      ${cs===CAPD.length-1?`<div class="note"><b>⏳ ${CAPD_POST.t}</b><br>${CAPD_POST.d}</div>`:''}`;
+      </div>`;
   }
   else if(s.type==='leaning'){
     const o=[['pd','體驗後我想選／想試試 腹膜透析（洗肚子）'],['more','對腹膜透析有興趣，但還想多了解'],['other','想了解其他治療（血液透析／移植等）']];
-    h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p>
-      <div class="opts">${o.map((x,idx)=>`<button class="opt focusable ${state.leaning===x[0]?'sel':''}" onclick="setLean('${x[0]}')"><span class="num">${idx+1}</span><span>${x[1]}</span></button>`).join('')}</div>
-      <div class="card"><div class="q">還有特別想問護理師的嗎？（可複選）</div><div class="checklist">${['感染（腹膜炎）怎麼預防','導管平常怎麼照顧','我年紀大／眼睛不好，做得到嗎','家人能不能幫我、要怎麼配合','洗澡、運動、生活會不會受影響','費用和健保給付','想再看一次換液操作','想了解其他治療（血液透析／移植）'].map((t,x)=>
-        `<div class="chk focusable ${state.asks.includes(t)?'sel':''}" onclick="toggleAsk('${t}',${x})"><span class="num">${x+1}</span><div class="box"></div><div>${t}</div></div>`).join('')}</div></div>`;
+    h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1>
+      <div class="qa-grid">
+        <div><p class="lead">${s.lead}</p>
+          <div class="opts">${o.map((x,idx)=>`<button class="opt focusable ${state.leaning===x[0]?'sel':''}" onclick="setLean('${x[0]}')"><span class="num">${idx+1}</span><span>${x[1]}</span></button>`).join('')}</div></div>
+        <div class="card"><div class="q">還有特別想問護理師的嗎？（可複選）</div><div class="checklist">${['感染（腹膜炎）怎麼預防','導管平常怎麼照顧','我年紀大／眼睛不好，做得到嗎','家人能不能幫我、要怎麼配合','洗澡、運動、生活會不會受影響','費用和健保給付','想再看一次換液操作','想了解其他治療（血液透析／移植）'].map((t,x)=>
+        `<div class="chk focusable ${state.asks.includes(t)?'sel':''}" onclick="toggleAsk('${t}',${x})"><span class="num">${x+1}</span><div class="box"></div><div>${t}</div></div>`).join('')}</div></div>
+      </div>`;
   }
   else if(s.type==='summary'){ h=summaryHTML(); }
 
   stage.innerHTML=h;
   if(s.type==='capd'&&CAPD_VIDEO.vimeo&&!CAPD_VIDEO.yt) armCapdVimeo();
-  updateNext(); collectFocus(); applyFocus(); window.scrollTo(0,0);
+  updateNext(); fitScreen(); window.scrollTo(0,0);
 }
+
+/* 衛教室電視：內容若超過一屏，整頁等比縮小到剛好一屏（滑鼠點選、不必捲動）。
+   窄螢幕（手機/平板直式）維持原尺寸可捲動。 */
+function fitScreen(){ const b=document.body; b.style.zoom='';
+  if(window.innerWidth<1100) return;
+  const need=document.documentElement.scrollHeight, have=window.innerHeight;
+  if(need>have) b.style.zoom=Math.max(.55, have/need*.985);
+}
+window.addEventListener('resize',()=>fitScreen());
 
 function videoBlock(key){ const v=VIDEOS[key];
   if(v.yt){ const url=`https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW&autoplay=1`;
@@ -387,32 +407,6 @@ function prev(){
   if(steps[i].type==='capd'&&state.capdStep>0){ state.capdStep--; state._focus='first'; render(); return; }
   if(i>0){state._picked=undefined; state._focus='first'; if(steps[i].type==='capd')state.capdStep=0; i--; render();}
 }
-
-/* 遙控器/鍵盤焦點 */
-let focusables=[], kf=0;
-function collectFocus(){ const stage=document.getElementById('stage');
-  focusables=[...stage.querySelectorAll('.focusable')];
-  const nb=document.getElementById('nextBtn'),bb=document.getElementById('backBtn');
-  if(nb.style.display!=='none'&&!nb.disabled)focusables.push(nb);
-  if(bb.style.visibility!=='hidden')focusables.push(bb);
-  let t=0;
-  if(state._focus==='next'){const idx=focusables.indexOf(document.getElementById('nextBtn')); t=idx>=0?idx:0;}
-  else if(typeof state._focus==='string'&&state._focus.startsWith('item')) t=Math.min(parseInt(state._focus.slice(4)),focusables.length-1);
-  kf=Math.max(0,Math.min(t,focusables.length-1));
-}
-function applyFocus(){ focusables.forEach(el=>el.classList.remove('kfocus'));
-  const el=focusables[kf]; if(el){el.classList.add('kfocus'); if(el.tagName!=='INPUT')el.focus({preventScroll:false});} }
-function moveFocus(d){ if(!focusables.length)return; kf=(kf+d+focusables.length)%focusables.length; applyFocus(); }
-document.addEventListener('keydown',e=>{ const k=e.key;
-  if(k==='ArrowDown'){e.preventDefault();moveFocus(1);}
-  else if(k==='ArrowUp'){e.preventDefault();moveFocus(-1);}
-  else if(k==='ArrowRight'||k==='PageDown'){ e.preventDefault();
-    if(steps[i].type==='capd'){ capdNext(); return; }
-    const b=document.getElementById('nextBtn'); if(b.style.display!=='none'&&!b.disabled)next(); }
-  else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
-  else if(k==='Enter'||k===' '){const el=focusables[kf]; if(el&&el.tagName!=='INPUT'){e.preventDefault();el.click();}}
-  else if(/^[1-9]$/.test(k)){const items=[...document.getElementById('stage').querySelectorAll('.opt,.chk')]; const n=parseInt(k)-1; if(items[n]){e.preventDefault();items[n].click();}}
-});
 
 /* 護理師摘要 */
 function leanText(){ return ({pd:'體驗後想選／想試 腹膜透析（洗肚子）',more:'對腹膜透析有興趣、想多了解',other:'想了解其他治療'})[state.leaning]||'未填'; }
