@@ -230,7 +230,7 @@ const CAPD_VIDEO = { vimeo:"425888006", yt:"", credit:"透析衛教工具包",
   clips:[ [197,224], [237,302], [318,328] ] };
 /* ═══════════════════════════════════════════════ */
 
-const state={ name:"", answers:{}, concerns:[], asks:[], leaning:null, capdStep:0, _picked:undefined, _focus:'first' };
+const state={ name:"", answers:{}, concerns:[], asks:[], leaning:null, capdStep:0, eduDone:false, _picked:undefined, _focus:'first' };
 
 /* ── CAPD 體驗：親手做「接管」與「分離」兩個關鍵步驟；中間的引流、注入看影片帶過 ── */
 const CAPD=[
@@ -346,27 +346,29 @@ function render(){
 
   stage.innerHTML=h;
   if(s.type==='capd'&&CAPD_VIDEO.vimeo&&!CAPD_VIDEO.yt) armCapdVimeo();
+  if(s.id==='edu'&&VIDEOS.edu.yt) armYT();
   updateNext(); fitScreen(); window.scrollTo(0,0);
 }
 
-/* 衛教室電視：內容若超過一屏，整頁等比縮小到剛好一屏（滑鼠點選、不必捲動）。
-   反覆量測最多 4 次，直到真的塞進一屏為止。窄螢幕（手機/平板直式）維持原尺寸可捲動。 */
-function fitScreen(){ const b=document.body; b.style.zoom='';
+/* 衛教室電視：內容若超過一屏，把主內容等比縮小到剛好一屏（滑鼠點選、不必捲動）。
+   用 transform:scale（不用 zoom）：Safari/Chrome 連 iframe 內的影片都會正確跟著縮放。
+   窄螢幕（手機/平板直式）維持原尺寸可捲動。 */
+function fitScreen(){ const st=document.querySelector('.stage'); if(!st) return;
+  st.style.transform=''; st.style.transformOrigin='top center'; document.body.style.overflow='';
   if(window.innerWidth<900) return;
-  let z=1;
-  for(let k=0;k<4;k++){
-    const need=document.documentElement.scrollHeight, have=window.innerHeight;
-    if(need<=have+1) break;
-    z=Math.max(.5, z*have/need*.98); b.style.zoom=z;
-  }
+  document.body.style.overflow='hidden';
+  const nav=document.querySelector('.nav'); const navH=nav?nav.offsetHeight:0;
+  const r=st.getBoundingClientRect();
+  const avail=window.innerHeight-navH-r.top-10;
+  if(r.height>avail&&avail>0) st.style.transform=`scale(${Math.max(.5, avail/r.height)})`;
 }
 window.addEventListener('resize',()=>fitScreen());
 
 function videoBlock(key){ const v=VIDEOS[key];
   if(v.yt){
-    // 播放器預先載入、藏在封面底下；點封面＝使用者手勢，直接下 playVideo 指令（不依賴 autoplay，各瀏覽器都可靠）
+    // 播放器預先載入、藏在封面底下：就緒後自動嘗試播放（被瀏覽器擋下時，點封面＝使用者手勢照樣可播）
     return `<div class="video">
-      <iframe id="ytEdu" src="https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW&enablejsapi=1" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <iframe id="ytEdu" src="https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&enablejsapi=1" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       <div class="vposter vfacade focusable" onclick="playYT(this)" title="播放影片">
         <img src="https://i.ytimg.com/vi/${v.yt}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${v.yt}/hqdefault.jpg'" alt="${v.label}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
         <button class="playbtn">▶</button></div></div>`; }
@@ -377,10 +379,33 @@ function videoBlock(key){ const v=VIDEOS[key];
 }
 function simPlay(el){ el.textContent=el.textContent==='▶'?'⏸':'▶'; }
 
-/* 點封面：藏起封面、對底下已就緒的播放器下「播放」指令（點擊＝使用者手勢，各瀏覽器可靠） */
-function playYT(poster){ poster.style.display='none';
-  const f=document.getElementById('ytEdu');
-  if(f&&f.contentWindow) f.contentWindow.postMessage(JSON.stringify({event:'command',func:'playVideo',args:[]}),'*'); }
+/* 衛教影片（YouTube）控制：
+   - 就緒後：關閉 YT 字幕（影片已有內嵌字幕）→ 嘗試自動播放；開始播放時自動藏封面。
+   - 被瀏覽器擋下自動播放時：封面留著，點封面（使用者手勢）就會播。
+   - 影片播完（或載入失敗/逾時）才開放「下一步」，病人不會略過影片。 */
+function ytPost(func,args){ const f=document.getElementById('ytEdu');
+  if(f&&f.contentWindow) f.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[]}),'*'); }
+function playYT(poster){ poster.style.display='none'; ytPost('playVideo'); }
+let ytArmTimer=null;
+function armYT(){ clearInterval(ytArmTimer); state._ytReady=false; let n=0;
+  ytArmTimer=setInterval(()=>{ const f=document.getElementById('ytEdu');
+    if(state._ytReady||!f){ clearInterval(ytArmTimer); return; }
+    if(++n>20){ clearInterval(ytArmTimer); // 播放器一直沒回應（如斷線）：開放下一步，避免卡住
+      if(steps[i]&&steps[i].id==='edu'&&!state.eduDone){ state.eduDone=true; updateNext(); } return; }
+    f.contentWindow.postMessage(JSON.stringify({event:'listening',id:'ytEdu',channel:'widget'}),'*');
+  },700); }
+window.addEventListener('message',e=>{
+  if(!/(^|\.)youtube(-nocookie)?\.com$/.test((()=>{try{return new URL(e.origin).hostname;}catch(_){return'';}})())) return;
+  let d; try{ d=typeof e.data==='string'?JSON.parse(e.data):e.data; }catch(err){ return; }
+  const playing=st=>{ if(st===1){ const p=document.querySelector('.vposter'); if(p) p.style.display='none'; state._ytReady=true;
+      ytPost('unloadModule',['captions']); ytPost('unloadModule',['cc']); } // 開始播放時再關一次字幕才會生效
+    if(st===0&&!state.eduDone){ state.eduDone=true; updateNext(); } };
+  if(d.event==='onReady'){ state._ytReady=true;
+    ytPost('unloadModule',['captions']); ytPost('unloadModule',['cc']); ytPost('playVideo'); }
+  else if(d.event==='onStateChange') playing(d.info);
+  else if(d.event==='infoDelivery'&&d.info&&d.info.playerState!==undefined) playing(d.info.playerState);
+  else if(d.event==='onError'&&!state.eduDone){ state.eduDone=true; updateNext(); }
+});
 
 /* 換液體驗每一步：優先播該步的示範影片剪段，沒設定就顯示插畫 */
 function capdMedia(cs){
@@ -391,7 +416,7 @@ function capdMedia(cs){
     ?`<div class="hint">▶ 這一段看影片就好（約 ${c[1]-c[0]} 秒${credit}），不用動手。想再看就按影片上的 ▶。</div>`
     :`<div class="hint">▶ 先看這段示範（約 ${c[1]-c[0]} 秒${credit}），再照著下面的說明做一次。想再看就按影片上的 ▶。</div>`;
   if(CAPD_VIDEO.yt){
-    const url=`https://www.youtube-nocookie.com/embed/${CAPD_VIDEO.yt}?start=${c[0]}&end=${c[1]}&rel=0&modestbranding=1&iv_load_policy=3&cc_lang_pref=zh-TW&autoplay=1`;
+    const url=`https://www.youtube-nocookie.com/embed/${CAPD_VIDEO.yt}?start=${c[0]}&end=${c[1]}&rel=0&modestbranding=1&iv_load_policy=3&autoplay=1`;
     return `<div class="video capd-clip"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>${hint}`;
   }
   // Vimeo 沒有 end 參數：用下方的 message 監聽，在剪段結尾自動暫停並跳回段落開頭
@@ -435,6 +460,7 @@ function updateNext(){ const s=steps[i],btn=document.getElementById('nextBtn'); 
   btn.textContent=i===0?'開始 ▶':(steps[i+1]&&steps[i+1].type==='summary'?'完成並產生摘要 ▶':'下一步 ▶');
   if(s.type==='quiz'&&state.answers[s.id]===undefined){btn.disabled=true; btn.textContent='請先作答';}
   if(s.type==='leaning'&&!state.leaning){btn.disabled=true; btn.textContent='請先選一個';}
+  if(s.id==='edu'&&!state.eduDone){btn.disabled=true; btn.textContent='請先看完影片';}
   if(s.type==='capd'){ const st=CAPD[state.capdStep];
     btn.style.display='inline-block'; document.getElementById('backBtn').textContent='◀ 上一步';
     btn.textContent = st.watch?'下一步 ▶':(state.capdStep<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶'); }
@@ -467,7 +493,7 @@ function summaryHTML(){
   </div>
   <p class="hint">※ 資料僅存在本次畫面，重新整理或換人即清除。摘要不含身分證等資料，僅作為和護理師討論用。</p>`;
 }
-function restart(){ Object.assign(state,{name:"",answers:{},concerns:[],asks:[],leaning:null,capdStep:0,_picked:undefined,_focus:'first'}); i=0; render(); }
+function restart(){ Object.assign(state,{name:"",answers:{},concerns:[],asks:[],leaning:null,capdStep:0,eduDone:false,_picked:undefined,_focus:'first'}); i=0; render(); }
 
 /* 隨機打亂每題選項順序 */
 function shuffle(a){ for(let j=a.length-1;j>0;j--){ const r=Math.floor(Math.random()*(j+1)); const t=a[j]; a[j]=a[r]; a[r]=t; } }
