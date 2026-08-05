@@ -49,7 +49,8 @@
   p.lead{font-size:20px; color:#3a352f; margin:10px 0;}
 
   .video{margin:14px 0; border-radius:16px; overflow:hidden; background:#0e1413;
-    aspect-ratio:16/9; position:relative; display:flex; align-items:center; justify-content:center;}
+    aspect-ratio:16/9; position:relative; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 22px rgba(43,38,34,.16);}
   .video video{width:100%; height:100%; object-fit:contain; background:#000;}
   .vstage{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:12px; color:#eef6f4; text-align:center; padding:20px; background:radial-gradient(120% 90% at 50% 30%,#243b39 0%,#0e1413 70%);}
@@ -57,7 +58,8 @@
     display:flex; align-items:center; justify-content:center; font-size:34px; cursor:pointer; border:none; box-shadow:0 8px 24px rgba(0,0,0,.4);}
   .vstage .label{font-size:18px; font-weight:700;} .vstage small{opacity:.7; font-size:13px;}
 
-  .card{background:var(--paper); border:1.5px solid var(--line); border-radius:16px; padding:18px; margin:12px 0;}
+  .card{background:var(--paper); border:1.5px solid var(--line); border-radius:16px; padding:18px; margin:12px 0;
+    box-shadow:0 2px 10px rgba(43,38,34,.05);}
   .q{font-size:23px; font-weight:800; margin-bottom:14px;}
   .opts{display:grid; gap:12px;}
 
@@ -117,7 +119,14 @@
   .capd-clip{max-width:520px; margin:8px auto 4px;}
 
   .nav{position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1.5px solid var(--line);
-    padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:max(12px,env(safe-area-inset-bottom));}
+    padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:max(12px,env(safe-area-inset-bottom));
+    box-shadow:0 -2px 14px rgba(43,38,34,.07);}
+  .btn{transition:.15s;}
+  @media (hover:hover){
+    .opt:hover,.chk:hover{border-color:var(--brand); box-shadow:0 2px 10px rgba(203,90,80,.18);}
+    .btn.primary:hover:not(:disabled){background:var(--brand-deep);}
+    .btn.ghost:hover{border-color:var(--muted); color:var(--ink);}
+  }
   .btn{font-family:inherit; font-size:21px; font-weight:800; border-radius:13px; padding:15px 22px; cursor:pointer; border:none;}
   .btn.primary{background:var(--brand); color:#fff; flex:1;}
   .btn.primary:disabled{background:#e3c4bf; cursor:not-allowed;}
@@ -138,6 +147,13 @@
   .ask::before{content:"？"; color:var(--brand); font-weight:900; margin-right:10px;}
 
   .center{text-align:center;} .big-emoji{font-size:60px; margin:8px 0;}
+  .welcome-steps{display:grid; gap:12px; margin:20px auto 10px; max-width:1080px;}
+  .wcard{background:#fff; border:1.5px solid var(--line); border-radius:16px; padding:20px 18px; text-align:center;
+    box-shadow:0 2px 10px rgba(43,38,34,.05);}
+  .wcard .wico{font-size:42px; margin-bottom:8px;}
+  .wcard b{display:block; font-size:20px; margin-bottom:6px; color:var(--brand-deep);}
+  .wcard p{font-size:16px; color:var(--muted); line-height:1.55;}
+  @media (min-width:720px){ .welcome-steps{grid-template-columns:1fr 1fr 1fr;} }
   .name-input{width:100%; font-family:inherit; font-size:19px; padding:15px; border:2.5px solid var(--line); border-radius:13px; margin-top:10px;}
   .hint{font-size:16px; color:var(--muted); margin-top:8px;}
   .toolbar{display:grid; gap:10px; margin-top:16px;}
@@ -146,7 +162,8 @@
   /* 大螢幕（衛教室電視/電腦）：目標是每一頁都不需捲動，滑鼠點選即可 */
   @media (min-width:1100px){
     body{font-size:21px;} header{padding:10px 40px;} .brand b{font-size:24px;} .brand span{font-size:15px;}
-    .progress{padding:8px 40px 0;} main{padding:14px 40px 96px;} .stage{max-width:1380px;}
+    .progress{padding:8px 40px 0;} main{padding:14px 40px 96px;} .stage{max-width:1380px; margin-block:auto;}
+    .big-emoji{font-size:76px;}
     h1{font-size:28px; margin:4px 0 2px;} p.lead{font-size:20px; margin:6px 0;} .eyebrow{font-size:17px;}
     .q{font-size:24px;} .opt{font-size:22px; min-height:70px; padding:16px 22px; gap:16px;}
     .num{width:40px; height:40px; font-size:20px; border-radius:10px;}
@@ -251,6 +268,7 @@ function render(){
   document.getElementById('barFill').style.width=Math.round(i/(steps.length-1)*100)+'%';
   document.getElementById('barText').textContent = s.type==='summary'?'完成！把摘要給護理師'
       : s.type==='capd'?`換液體驗　第 ${state.capdStep+1} / ${CAPD.length} 步`
+      : s.type==='welcome'?'準備開始'
       : `第 ${i} / ${MAIN} 步`;
   document.getElementById('backBtn').style.visibility=i===0?'hidden':'visible';
   let h='';
@@ -258,9 +276,13 @@ function render(){
   if(s.type==='welcome'){
     h=`<div class="center"><div class="big-emoji">🩺</div><div class="eyebrow">歡迎</div>
       <h1>認識腹膜透析，並親手體驗一次</h1>
-      <p class="lead">先看一段醫師說明的短片，認識腹膜透析（洗肚子），接著親手做一次換液體驗。完成後護理師會花 10 分鐘和你確認、回答問題。</p>
-      <div class="card" style="text-align:left">
-      <div class="hint">隨時可暫停、回上一步重看。</div></div></div>`;
+      <p class="lead">今天有三個部分，跟著右下角的按鈕一步一步走就可以。</p>
+      <div class="welcome-steps">
+        <div class="wcard"><div class="wico">🎬</div><b>1　先看影片</b><p>嘉基醫師說明腹膜透析（洗肚子）是什麼、怎麼運作</p></div>
+        <div class="wcard"><div class="wico">🧤</div><b>2　親手體驗</b><p>跟著示範影片，用體驗圍裙做一次換液操作</p></div>
+        <div class="wcard"><div class="wico">💬</div><b>3　問護理師</b><p>勾選想了解的問題，護理師會當面為你說明</p></div>
+      </div>
+      <div class="hint">隨時可暫停、回上一步重看。</div></div>`;
   }
   else if(s.type==='four'){
     h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p>
