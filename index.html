@@ -108,12 +108,11 @@
   .capd-note{font-size:16px; margin-top:14px;}
   .qa-grid{display:grid; gap:12px;}
   @media (min-width:900px){
-    .capd-grid{grid-template-columns:1.1fr 1fr; gap:24px; align-items:start;}
+    .capd-grid{grid-template-columns:1.35fr 1fr; gap:26px; align-items:center;}
     .capd-clip{max-width:none; margin:0;}
   }
   .capd-instr{font-size:22px; margin:12px 0; line-height:1.6;}
   .capd-do{background:var(--gold-soft); border-left:6px solid var(--gold); padding:14px; border-radius:12px; font-size:20px; margin:10px 0;}
-  .capd-btn{width:100%; font-size:23px; font-weight:800; background:var(--pd); color:#fff; border:none; border-radius:14px; padding:18px; cursor:pointer; font-family:inherit;}
   .capd-svg{aspect-ratio:4/3; object-fit:cover;}
   .capd-clip{max-width:520px; margin:8px auto 4px;}
 
@@ -147,20 +146,20 @@
   /* 大螢幕（衛教室電視/電腦）：目標是每一頁都不需捲動，滑鼠點選即可 */
   @media (min-width:1100px){
     body{font-size:21px;} header{padding:10px 40px;} .brand b{font-size:24px;} .brand span{font-size:15px;}
-    .progress{padding:8px 40px 0;} main{padding:14px 40px 96px;} .stage{max-width:1060px;}
+    .progress{padding:8px 40px 0;} main{padding:14px 40px 96px;} .stage{max-width:1380px;}
     h1{font-size:28px; margin:4px 0 2px;} p.lead{font-size:20px; margin:6px 0;} .eyebrow{font-size:17px;}
     .q{font-size:24px;} .opt{font-size:22px; min-height:70px; padding:16px 22px; gap:16px;}
     .num{width:40px; height:40px; font-size:20px; border-radius:10px;}
     .four .ocard .h{font-size:22px;} .four .ocard p{font-size:17px;} .four .ocard .ico{width:42px; height:42px; font-size:22px;}
     .note{font-size:19px;} .chk{font-size:20px;} .feedback{font-size:20px;}
     .tracker{margin:10px 0;} .tchip{font-size:16px; min-width:100px;} .tchip .tn{width:30px; height:30px; font-size:18px;}
-    .capd-svg{max-width:620px;} .capd-instr{font-size:22px; margin:10px 0;} .capd-do{font-size:20px;} .capd-btn{font-size:24px; padding:16px;}
+    .capd-svg{max-width:620px;} .capd-instr{font-size:22px; margin:10px 0;} .capd-do{font-size:20px;}
     .nav{padding:12px 40px;} .btn{font-size:22px; padding:14px 32px;} .btn.primary{flex:none;}
     .toolbar{display:flex; flex-wrap:wrap;} .toolbar .btn{width:auto;}
     .summary .head b{font-size:24px;} .srow{padding:14px 24px;}
     /* 電視一屏內看完：影片高度依視窗高度計算、QA 與勾選清單改欄狀 */
-    .video{width:min(100%, calc((100vh - 380px) * 16 / 9)); margin-left:auto; margin-right:auto;}
-    .capd-clip{width:min(100%, calc((100vh - 470px) * 16 / 9)); margin-left:auto; margin-right:auto;}
+    .video{width:min(100%, calc((100vh - 360px) * 16 / 9)); margin-left:auto; margin-right:auto;}
+    .capd-clip{width:min(100%, calc((100vh - 400px) * 16 / 9)); margin-left:auto; margin-right:auto;}
     .checklist{grid-template-columns:1fr 1fr; gap:12px;}
     .qa-grid{grid-template-columns:1fr 1.25fr; gap:22px; align-items:start;}
     .qa-grid .card{margin:0;}
@@ -301,7 +300,6 @@ function render(){
             <div class="q">${st.t}</div>
             <div class="capd-instr">${st.d}</div>
             <div class="capd-do">${st.watch?'💡':'👉'} ${st.do}</div>
-            <button class="capd-btn focusable" onclick="capdNext()">${st.watch?'我看完了 ▶':(cs<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶')}</button>
             ${cs===0?`<div class="note capd-note"><b>🧼 ${CAPD_PRE.t}</b>　${CAPD_PRE.d}</div>`:''}
             ${cs===CAPD.length-1?`<div class="note capd-note"><b>⏳ ${CAPD_POST.t}</b>　${CAPD_POST.d}</div>`:''}
           </div>
@@ -326,11 +324,15 @@ function render(){
 }
 
 /* 衛教室電視：內容若超過一屏，整頁等比縮小到剛好一屏（滑鼠點選、不必捲動）。
-   窄螢幕（手機/平板直式）維持原尺寸可捲動。 */
+   反覆量測最多 4 次，直到真的塞進一屏為止。窄螢幕（手機/平板直式）維持原尺寸可捲動。 */
 function fitScreen(){ const b=document.body; b.style.zoom='';
-  if(window.innerWidth<1100) return;
-  const need=document.documentElement.scrollHeight, have=window.innerHeight;
-  if(need>have) b.style.zoom=Math.max(.55, have/need*.985);
+  if(window.innerWidth<900) return;
+  let z=1;
+  for(let k=0;k<4;k++){
+    const need=document.documentElement.scrollHeight, have=window.innerHeight;
+    if(need<=have+1) break;
+    z=Math.max(.5, z*have/need*.98); b.style.zoom=z;
+  }
 }
 window.addEventListener('resize',()=>fitScreen());
 
@@ -387,7 +389,6 @@ window.addEventListener('message',e=>{
 
 /* ── CAPD 五步驟示意圖：改用 Gemini 生成的插畫 img/capd-1..5.png（見上方 CAPD 陣列） ── */
 
-function capdNext(){ if(state.capdStep<CAPD.length-1){ state.capdStep++; state._focus='first'; render(); } else { state._focus='first'; next(); } }
 
 function answer(id,x,c){ state.answers[id]=!!c; state._picked=x; state._focus='next'; render(); }
 function toggleConcern(t,x){ const a=state.concerns; a.includes(t)?a.splice(a.indexOf(t),1):a.push(t); state._focus='item'+x; render(); }
@@ -398,11 +399,16 @@ function updateNext(){ const s=steps[i],btn=document.getElementById('nextBtn'); 
   btn.textContent=i===0?'開始 ▶':(steps[i+1]&&steps[i+1].type==='summary'?'完成並產生摘要 ▶':'下一步 ▶');
   if(s.type==='quiz'&&state.answers[s.id]===undefined){btn.disabled=true; btn.textContent='請先作答';}
   if(s.type==='leaning'&&!state.leaning){btn.disabled=true; btn.textContent='請先選一個';}
-  if(s.type==='capd'){ btn.style.display='none'; document.getElementById('backBtn').textContent='◀ 上一步'; }
+  if(s.type==='capd'){ const st=CAPD[state.capdStep];
+    btn.style.display='inline-block'; document.getElementById('backBtn').textContent='◀ 上一步';
+    btn.textContent = st.watch?'下一步 ▶':(state.capdStep<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶'); }
   else if(s.type==='summary'){btn.style.display='none'; document.getElementById('backBtn').textContent='◀ 重看內容';}
   else{btn.style.display='inline-block'; document.getElementById('backBtn').textContent='◀ 上一步';}
 }
-function next(){ if(i<steps.length-1){state._picked=undefined; state._focus='first'; i++; render();} }
+function next(){
+  if(steps[i].type==='capd'&&state.capdStep<CAPD.length-1){ state.capdStep++; render(); return; }
+  if(i<steps.length-1){state._picked=undefined; state._focus='first'; i++; render();}
+}
 function prev(){
   if(steps[i].type==='capd'&&state.capdStep>0){ state.capdStep--; state._focus='first'; render(); return; }
   if(i>0){state._picked=undefined; state._focus='first'; if(steps[i].type==='capd')state.capdStep=0; i--; render();}
