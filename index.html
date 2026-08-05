@@ -52,6 +52,9 @@
     aspect-ratio:16/9; position:relative; display:flex; align-items:center; justify-content:center;
     box-shadow:0 6px 22px rgba(43,38,34,.16);}
   .video video{width:100%; height:100%; object-fit:contain; background:#000;}
+  .vfacade{cursor:pointer;}
+  .vfacade .playbtn{position:relative; z-index:1;}
+  @media (hover:hover){ .vfacade:hover .playbtn{transform:scale(1.08); background:#fff;} }
   .vstage{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:12px; color:#eef6f4; text-align:center; padding:20px; background:radial-gradient(120% 90% at 50% 30%,#243b39 0%,#0e1413 70%);}
   .playbtn{width:78px; height:78px; border-radius:50%; background:rgba(255,255,255,.96); color:var(--brand);
@@ -359,14 +362,21 @@ function fitScreen(){ const b=document.body; b.style.zoom='';
 window.addEventListener('resize',()=>fitScreen());
 
 function videoBlock(key){ const v=VIDEOS[key];
-  if(v.yt){ const url=`https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW&autoplay=1`;
-    return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`; }
+  if(v.yt){
+    // 先顯示乾淨的影片封面，點了才載入播放器（避免 autoplay 被擋時出現灰色「更多影片」怪畫面）
+    return `<div class="video vfacade focusable" onclick="playYT(this,'${v.yt}')" title="播放影片">
+      <img src="https://i.ytimg.com/vi/${v.yt}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${v.yt}/hqdefault.jpg'" alt="${v.label}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+      <button class="playbtn">▶</button></div>`; }
   if(v.vimeo){ const url=`https://player.vimeo.com/video/${v.vimeo}?title=0&byline=0&portrait=0&dnt=1&autoplay=1`;
     return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`; }
   return `<div class="video"><div class="vstage"><button class="playbtn focusable" onclick="simPlay(this)">▶</button>
     <div class="label">${v.label}</div><small>影片插槽（示意）— 嘉基置入影片後即可播放</small></div></div>`;
 }
 function simPlay(el){ el.textContent=el.textContent==='▶'?'⏸':'▶'; }
+
+/* 點封面才載入 YouTube 播放器並開始播（點擊＝使用者手勢，有聲自動播放最可靠） */
+function playYT(el,id){ el.classList.remove('vfacade'); el.onclick=null; el.removeAttribute('title');
+  el.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&cc_lang_pref=zh-TW&autoplay=1" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`; }
 
 /* 換液體驗每一步：優先播該步的示範影片剪段，沒設定就顯示插畫 */
 function capdMedia(cs){
