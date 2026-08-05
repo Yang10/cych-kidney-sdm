@@ -59,10 +59,6 @@
 
   .card{background:var(--paper); border:1.5px solid var(--line); border-radius:16px; padding:18px; margin:12px 0;}
   .q{font-size:23px; font-weight:800; margin-bottom:14px;}
-  .qrow{display:flex; align-items:flex-start; gap:10px; margin-bottom:14px;}
-  .qrow .q{margin-bottom:0; flex:1;}
-  .speak{flex:none; background:var(--brand-tint); color:var(--brand-deep); border:none; border-radius:10px;
-    padding:8px 14px; font-size:18px; font-weight:800; cursor:pointer; font-family:inherit; white-space:nowrap;}
   .opts{display:grid; gap:12px;}
 
   .opt,.chk{font-family:inherit; color:var(--ink); cursor:pointer; background:#fff;
@@ -319,9 +315,9 @@ function render(){
 }
 
 function videoBlock(key){ const v=VIDEOS[key];
-  if(v.yt){ const url=`https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW`;
+  if(v.yt){ const url=`https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW&autoplay=1`;
     return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`; }
-  if(v.vimeo){ const url=`https://player.vimeo.com/video/${v.vimeo}?title=0&byline=0&portrait=0&dnt=1`;
+  if(v.vimeo){ const url=`https://player.vimeo.com/video/${v.vimeo}?title=0&byline=0&portrait=0&dnt=1&autoplay=1`;
     return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`; }
   return `<div class="video"><div class="vstage"><button class="playbtn focusable" onclick="simPlay(this)">▶</button>
     <div class="label">${v.label}</div><small>影片插槽（示意）— 嘉基置入影片後即可播放</small></div></div>`;
@@ -334,17 +330,16 @@ function capdMedia(cs){
   if(!c||(!CAPD_VIDEO.yt&&!CAPD_VIDEO.vimeo)) return CAPD[cs].svg;
   const credit=CAPD_VIDEO.credit?`，${CAPD_VIDEO.credit}`:'';
   const hint=CAPD[cs].watch
-    ?`<div class="hint">▶ 這一段看影片就好（約 ${c[1]-c[0]} 秒${credit}），不用動手。</div>`
-    :`<div class="hint">▶ 先看這段示範（約 ${c[1]-c[0]} 秒${credit}），再照著下面的說明做一次。</div>`;
+    ?`<div class="hint">▶ 這一段看影片就好（約 ${c[1]-c[0]} 秒${credit}），不用動手。想再看就按影片上的 ▶。</div>`
+    :`<div class="hint">▶ 先看這段示範（約 ${c[1]-c[0]} 秒${credit}），再照著下面的說明做一次。想再看就按影片上的 ▶。</div>`;
   if(CAPD_VIDEO.yt){
-    const url=`https://www.youtube-nocookie.com/embed/${CAPD_VIDEO.yt}?start=${c[0]}&end=${c[1]}&rel=0&modestbranding=1&iv_load_policy=3&cc_lang_pref=zh-TW`;
+    const url=`https://www.youtube-nocookie.com/embed/${CAPD_VIDEO.yt}?start=${c[0]}&end=${c[1]}&rel=0&modestbranding=1&iv_load_policy=3&cc_lang_pref=zh-TW&autoplay=1`;
     return `<div class="video capd-clip"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>${hint}`;
   }
-  // Vimeo 沒有 end 參數：用下方的 message 監聽，在剪段結尾自動暫停
-  const url=`https://player.vimeo.com/video/${CAPD_VIDEO.vimeo}?dnt=1&title=0&byline=0&portrait=0#t=${c[0]}s`;
+  // Vimeo 沒有 end 參數：用下方的 message 監聽，在剪段結尾自動暫停並跳回段落開頭
+  const url=`https://player.vimeo.com/video/${CAPD_VIDEO.vimeo}?dnt=1&title=0&byline=0&portrait=0&autoplay=1#t=${c[0]}s`;
   return `<div class="video capd-clip"><iframe id="capdVimeo" src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
-    ${hint}
-    <button class="speak focusable" style="margin-bottom:6px" onclick="capdReplay()">↻ 再看一次這段示範</button>`;
+    ${hint}`;
 }
 
 /* Vimeo 剪段控制：到段落結尾自動暫停；病人捲回去或按「再看一次」會重新生效 */
@@ -369,8 +364,6 @@ window.addEventListener('message',e=>{
       capdVimeoPost('pause'); capdVimeoPost('setCurrentTime',c[0]); }
   }
 });
-function capdReplay(){ const c=CAPD_VIDEO.clips[state.capdStep]; if(!c) return;
-  capdClipStopped=false; capdVimeoPost('setCurrentTime',c[0]); capdVimeoPost('play'); }
 
 /* ── CAPD 五步驟示意圖：改用 Gemini 生成的插畫 img/capd-1..5.png（見上方 CAPD 陣列） ── */
 
