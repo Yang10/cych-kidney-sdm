@@ -145,10 +145,6 @@
   .hint{font-size:16px; color:var(--muted); margin-top:8px;}
   .toolbar{display:grid; gap:10px; margin-top:16px;}
   .toolbar .btn{flex:none; width:100%;}
-  #sumText{display:none; width:100%; height:180px; margin-top:12px; font-family:inherit; font-size:15px; padding:14px; border:2px solid var(--line); border-radius:12px; background:#fff;}
-  .toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%); background:var(--ink); color:#fff;
-    padding:12px 22px; border-radius:999px; font-size:16px; opacity:0; transition:.25s; pointer-events:none; z-index:9; max-width:90%; text-align:center;}
-  .toast.show{opacity:1;}
 
   /* 大螢幕 / 電視 */
   @media (min-width:1100px){
@@ -177,7 +173,7 @@
     .nav{padding:8px 16px;} .btn{padding:11px 18px; font-size:17px;} .btn.ghost{padding:11px 13px; font-size:15px;}
     .card{padding:14px;} .q{font-size:18px;} .opt{min-height:54px; padding:12px 14px; font-size:17px;}
   }
-  @media print{header,.progress,.nav,.toolbar,.toast{display:none!important;} main{padding:0;} body{background:#fff;}}
+  @media print{header,.progress,.nav,.toolbar{display:none!important;} main{padding:0;} body{background:#fff;}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
 </head>
@@ -189,7 +185,6 @@
 
 <div class="progress"><div class="bar"><i id="barFill"></i></div><div class="ptext" id="barText">準備開始</div></div>
 <main><div class="stage" id="stage"></div></main>
-<div class="toast" id="toast"></div>
 
 <div class="nav">
   <div class="keyhint">遙控器：<kbd>▲</kbd><kbd>▼</kbd> 移動　<kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 直接選　<kbd>OK</kbd> 確認　<kbd>▶</kbd> 下一步　<kbd>◀</kbd> 上一步</div>
@@ -438,26 +433,11 @@ function summaryHTML(){
     <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?`<span class="pill">已完成體驗（親手做：接管、分離）</span>`:'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
     <div class="srow"><div class="k">病人想問的問題</div>${state.asks.length?state.asks.map(a=>`<div class="ask">${a}</div>`).join(''):'<span class="hint">無特別勾選</span>'}</div></div>
   <div class="toolbar">
-    <button class="btn primary focusable" onclick="copySummary()">📋 複製摘要文字（傳給診間 LINE）</button>
-    <button class="btn ghost focusable" onclick="window.print()">🖨 列印 / 存檔</button>
+    <button class="btn primary focusable" onclick="window.print()">🖨 列印 / 存檔</button>
     <button class="btn ghost focusable" onclick="restart()">換下一位（清空重來）</button>
   </div>
-  <textarea id="sumText" readonly></textarea>
   <p class="hint">※ 資料僅存在本次畫面，重新整理或換人即清除。摘要不含身分證等資料，僅作為和護理師討論用。</p>`;
 }
-function buildSummaryText(){
-  return ['【腹膜透析（洗肚子）認識與體驗｜病人摘要】',
-    '目前傾向：'+leanText(),
-    '換液體驗：'+(state.capdStep>=CAPD.length-1?'已完成':'未完成'),
-    '想問的問題：'+(state.asks.length?state.asks.join('、'):'無'),
-  ].filter(Boolean).join('\n');
-}
-function copySummary(){ const ta=document.getElementById('sumText'); ta.style.display='block'; ta.value=buildSummaryText();
-  ta.focus(); ta.select(); ta.setSelectionRange(0,99999);
-  let done=false; try{ done=document.execCommand('copy'); }catch(e){}
-  if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>toast('已複製，可貼到 LINE 傳給診間')).catch(()=>toast(done?'已複製':'請長按下方文字框複製')); }
-  else toast(done?'已複製，可貼到 LINE':'請長按下方文字框複製'); }
-function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
 function restart(){ Object.assign(state,{name:"",answers:{},concerns:[],asks:[],leaning:null,capdStep:0,_picked:undefined,_focus:'first'}); i=0; render(); }
 
 /* 隨機打亂每題選項順序 */
