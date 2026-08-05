@@ -16,8 +16,9 @@
      YouTube 用 yt："youtu.be/DpGCm-MhRe0" → 只填 "DpGCm-MhRe0"。
      Vimeo 用 vimeo："vimeo.com/378770445" → 只填 "378770445"。
   ② 操作：手機用手指點。電視用遙控器 ▲▼ 移動、數字鍵直選、OK 確認、▶ 下一步。
-  ③ CAPD 體驗：四步驟（接管/引流/注入/分離），每一步先播義大示範影片的對應剪段
-     （const CAPD_VIDEO 可調秒數；yt 留空則顯示插畫），搭配體驗圍裙＋練習藥水照著做。
+  ③ CAPD 體驗：親手做「接管」與「分離」兩步（搭配體驗圍裙＋練習藥水），
+     中間的引流＋注入合併成一段影片帶過（不用動手，傳達「就這麼簡單」）。
+     每一步先播示範影片的對應剪段（const CAPD_VIDEO 可調秒數；留空則顯示插畫）。
   ④ 語音：右上角「🔊 朗讀」開啟自動唸；題目卡也有 🔊 重唸（台語建議用院方錄音）。
 ═══════════════════════════════════════════════════════════════════
 -->
@@ -220,14 +221,13 @@ const VIDEOS = {
   // yt＝YouTube 影片編號（youtu.be/XXXX 的 XXXX）；vimeo＝Vimeo 編號。擇一填寫。
   edu: { label:"腹膜透析完整解析（嘉基 顏正杰醫師）", yt:"DpGCm-MhRe0" },
 };
-/* 換液體驗四步驟的示範影片剪段：每步只播對應的那一小段，病人看完照著做。
+/* 換液體驗的示範影片剪段：每步只播對應的那一小段。
    目前用「透析衛教工具包」的 CAPD 操作教學（vimeo.com/425888006，居家情境、大字字幕）：
-   接管 3:17–3:57、引流 3:57–4:26、注入(含排氣) 4:26–5:02、分離(蓋迷你帽) 5:02–5:38
-   clips＝[開始秒數, 結束秒數]，可自行微調；credit＝影片出處（顯示給病人看）。
-   改用 YouTube：把 vimeo 留空、填 yt（例如義大示範 yt:"fW8vD3uEWRA"，剪段 [293,313],[313,338],[338,392],[406,438]）。
-   vimeo 和 yt 都留空("")則顯示插畫。 */
+   ① 接管(親手做) 3:17–3:57、② 引流＋排氣＋注入(看影片帶過) 3:57–5:02、③ 分離(親手做) 5:02–5:38
+   clips＝[開始秒數, 結束秒數]，順序對應上面 CAPD 陣列，可自行微調；credit＝影片出處（顯示給病人看）。
+   改用 YouTube：把 vimeo 留空、填 yt。vimeo 和 yt 都留空("")則顯示插畫。 */
 const CAPD_VIDEO = { vimeo:"425888006", yt:"", credit:"透析衛教工具包",
-  clips:[ [197,237], [237,266], [266,302], [302,338] ] };
+  clips:[ [197,237], [237,302], [302,338] ] };
 /* ═══════════════════════════════════════════════ */
 
 let lang='guo';
@@ -238,18 +238,15 @@ function setLang(l){ lang=l;
   document.getElementById('langTai').classList.toggle('on',l==='tai');
   if('speechSynthesis' in window) window.speechSynthesis.cancel(); render(); }
 
-/* ── CAPD 五步驟（無菌→接管→引流→注入→留置） ── */
+/* ── CAPD 體驗：親手做「接管」與「分離」兩個關鍵步驟；中間的引流、注入看影片帶過 ── */
 const CAPD=[
-  { short:'接管', t:'第一步：接管',
+  { short:'接管', t:'第一步：接管（親手做）',
     d:'把透析液的管路接頭，和你腹部導管的接頭小心接在一起。全程不要用手碰到接口，保持無菌。',
     do:'請拿起體驗圍裙上的導管，試著把管路接上。', svg:'<img class="capd-svg" src="img/capd-2.png" alt="把管路接上腹部導管">' },
-  { short:'引流', t:'第二步：引流（先把舊的放出）',
-    d:'打開開關，讓肚子裡停留過的舊透析液，先流到下方的引流袋，直到流乾淨。',
-    do:'把空袋放低，看著練習藥水往下流出。', svg:'<img class="capd-svg" src="img/capd-3.png" alt="舊藥水往下流入引流袋">' },
-  { short:'注入', t:'第三步：注入（再灌入新的）',
-    d:'把新的透析液袋掛高，關掉引流那端、打開注入開關，讓乾淨的藥水順著管子緩緩流進肚子裡。',
-    do:'把藥水袋掛高，看著新藥水緩緩流入。', svg:'<img class="capd-svg" src="img/capd-4.png" alt="新藥水從高處流入腹腔">' },
-  { short:'分離', t:'第四步：分離管路（蓋上保護帽）',
+  { short:'引流･注入', t:'中間兩段：引流、注入（看影片就好）', watch:true,
+    d:'接好之後，先打開開關，讓肚子裡的舊藥水自己流到空袋（引流）；流乾淨後換邊，讓新藥水從高處流進肚子（注入）。這兩段不需要技巧，就是開著開關、坐著等它流完。',
+    do:'這段今天不用動手，看影片感受一下——其實就是等藥水流完，就這麼簡單。', svg:'<img class="capd-svg" src="img/capd-3.png" alt="舊藥水流出、新藥水流入">' },
+  { short:'分離', t:'最後一步：分離管路、蓋上保護帽（親手做）',
     d:'灌完後關上開關，把透析液的管路和你肚子上的導管小心分開，再接上新的「保護帽」把導管口蓋好，保持乾淨。',
     do:'關開關、把管路分開，幫導管口蓋上新的保護帽。', svg:'<img class="capd-svg" src="img/capd-5.png" alt="分開管路、蓋上保護帽">' },
 ];
@@ -330,8 +327,8 @@ function render(){
         <div style="text-align:left">
           <div class="q">${st.t}</div>
           <div class="capd-instr">${st.d}</div>
-          <div class="capd-do">👉 ${st.do}</div>
-          <button class="capd-btn focusable" onclick="capdNext()">${cs<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶'}</button>
+          <div class="capd-do">${st.watch?'💡':'👉'} ${st.do}</div>
+          <button class="capd-btn focusable" onclick="capdNext()">${st.watch?'我看完了 ▶':(cs<CAPD.length-1?'完成這一步 ▶':'我完成體驗了 ▶')}</button>
         </div>
       </div>
       ${cs===CAPD.length-1?`<div class="note"><b>⏳ ${CAPD_POST.t}</b><br>${CAPD_POST.d}</div>`:''}`;
@@ -367,7 +364,9 @@ function capdMedia(cs){
   const c=CAPD_VIDEO.clips[cs];
   if(!c||(!CAPD_VIDEO.yt&&!CAPD_VIDEO.vimeo)) return CAPD[cs].svg;
   const credit=CAPD_VIDEO.credit?`，${CAPD_VIDEO.credit}`:'';
-  const hint=`<div class="hint">▶ 先看這段示範（約 ${c[1]-c[0]} 秒${credit}），再照著下面的說明做一次。</div>`;
+  const hint=CAPD[cs].watch
+    ?`<div class="hint">▶ 這一段看影片就好（約 ${c[1]-c[0]} 秒${credit}），不用動手。</div>`
+    :`<div class="hint">▶ 先看這段示範（約 ${c[1]-c[0]} 秒${credit}），再照著下面的說明做一次。</div>`;
   if(CAPD_VIDEO.yt){
     const url=`https://www.youtube-nocookie.com/embed/${CAPD_VIDEO.yt}?start=${c[0]}&end=${c[1]}&rel=0&modestbranding=1&iv_load_policy=3&cc_lang_pref=zh-TW`;
     return `<div class="video capd-clip"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>${hint}`;
@@ -512,7 +511,7 @@ function summaryHTML(){
   return `<div class="summary"><div class="head"><b>護理師確認單　給最後 10 分鐘的對話</b>
       <span>完成時間：${ts}　語言：${lang==='guo'?'國語':'台語'}</span></div>
     <div class="srow"><div class="k">目前傾向</div><span class="lean ${cls}">${leanText()}</span></div>
-    <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?`<span class="pill">已完成 ${CAPD.length} 步驟體驗</span>`:'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
+    <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?`<span class="pill">已完成體驗（親手做：接管、分離）</span>`:'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
     <div class="srow"><div class="k">病人想問的問題</div>${state.asks.length?state.asks.map(a=>`<div class="ask">${a}</div>`).join(''):'<span class="hint">無特別勾選</span>'}</div></div>
   <div class="toolbar">
     <button class="btn primary focusable" onclick="copySummary()">📋 複製摘要文字（傳給診間 LINE）</button>
