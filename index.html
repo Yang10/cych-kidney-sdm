@@ -12,14 +12,13 @@
 ═══════════════════════════════════════════════════════════════════
   一份檔案，手機（直/橫式）與電視（橫式）通用。
   ① 置入嘉基影片：程式碼最上面 const VIDEOS = {...}
-     vimeo＝國語影片的 Vimeo 編號、vimeo_tw＝台語（選填）。留空("")顯示插槽示意。
      YouTube 用 yt："youtu.be/DpGCm-MhRe0" → 只填 "DpGCm-MhRe0"。
-     Vimeo 用 vimeo："vimeo.com/378770445" → 只填 "378770445"。
+     Vimeo 用 vimeo："vimeo.com/378770445" → 只填 "378770445"。留空("")顯示插槽示意。
   ② 操作：手機用手指點。電視用遙控器 ▲▼ 移動、數字鍵直選、OK 確認、▶ 下一步。
+     （原「🔊 朗讀」語音功能已移除：每步都有示範影片與大字字幕，不再需要。）
   ③ CAPD 體驗：親手做「接管」與「分離」兩步（搭配體驗圍裙＋練習藥水），
      中間的引流＋注入合併成一段影片帶過（不用動手，傳達「就這麼簡單」）。
      每一步先播示範影片的對應剪段（const CAPD_VIDEO 可調秒數；留空則顯示插畫）。
-  ④ 語音：右上角「🔊 朗讀」開啟自動唸；題目卡也有 🔊 重唸（台語建議用院方錄音）。
 ═══════════════════════════════════════════════════════════════════
 -->
 
@@ -37,14 +36,6 @@
     display:flex; flex-direction:column; min-height:100vh; -webkit-text-size-adjust:100%;}
   header{background:var(--brand); color:#fff; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
   .brand b{font-size:19px; font-weight:800; display:block;} .brand span{font-size:13px; opacity:.9;}
-  .ctrls{display:flex; align-items:center; gap:8px; flex:none;}
-  .rbtn{background:rgba(255,255,255,.16); color:#fff; border:1.5px solid rgba(255,255,255,.5);
-    border-radius:999px; padding:7px 13px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap;}
-  .rbtn.on{background:#fff; color:var(--brand);}
-  .lang{display:flex; gap:8px; flex:none;}
-  .lang button{background:rgba(255,255,255,.16); color:#fff; border:1.5px solid rgba(255,255,255,.5);
-    border-radius:999px; padding:7px 15px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;}
-  .lang button.on{background:#fff; color:var(--brand);}
 
   .progress{padding:12px 18px 0;}
   .bar{height:10px; background:var(--brand-tint); border-radius:999px; overflow:hidden;}
@@ -162,7 +153,6 @@
   /* 大螢幕 / 電視 */
   @media (min-width:1100px){
     body{font-size:26px;} header{padding:18px 40px;} .brand b{font-size:28px;} .brand span{font-size:18px;}
-    .rbtn{font-size:18px; padding:10px 18px;} .lang button{font-size:20px; padding:10px 22px;}
     .progress{padding:14px 40px 0;} main{padding:30px 40px 150px;} .stage{max-width:1000px;}
     h1{font-size:42px;} p.lead{font-size:27px;} .eyebrow{font-size:20px;}
     .q{font-size:30px;} .opt{font-size:28px; min-height:86px; padding:22px 26px; gap:20px;}
@@ -181,14 +171,13 @@
   /* 矮螢幕（手機橫式） */
   @media (max-height:560px) and (max-width:1099px){
     header{padding:8px 16px;} .brand b{font-size:16px;} .brand span{display:none;}
-    .rbtn,.lang button{padding:5px 11px; font-size:13px;}
     .progress{padding:7px 16px 0;} .bar{height:8px;}
     main{padding:12px 16px 84px;} h1{font-size:21px; margin-top:4px;} p.lead{font-size:16px; margin:6px 0;}
     .video{height:48vh; aspect-ratio:auto;} .capd-svg{max-width:320px;}
     .nav{padding:8px 16px;} .btn{padding:11px 18px; font-size:17px;} .btn.ghost{padding:11px 13px; font-size:15px;}
     .card{padding:14px;} .q{font-size:18px;} .opt{min-height:54px; padding:12px 14px; font-size:17px;}
   }
-  @media print{header,.progress,.nav,.toolbar,.lang,.toast{display:none!important;} main{padding:0;} body{background:#fff;}}
+  @media print{header,.progress,.nav,.toolbar,.toast{display:none!important;} main{padding:0;} body{background:#fff;}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
 </style>
 </head>
@@ -196,13 +185,6 @@
 
 <header>
   <div class="brand"><b>嘉義基督教醫院　腎臟內科</b><span>腹膜透析（洗肚子）・認識與體驗</span></div>
-  <div class="ctrls">
-    <button id="readBtn" class="rbtn focusable on" onclick="toggleRead()">🔊 朗讀：開</button>
-    <div class="lang">
-      <button id="langGuo" class="on focusable" onclick="setLang('guo')">國語</button>
-      <button id="langTai" class="focusable" onclick="setLang('tai')">台語</button>
-    </div>
-  </div>
 </header>
 
 <div class="progress"><div class="bar"><i id="barFill"></i></div><div class="ptext" id="barText">準備開始</div></div>
@@ -230,13 +212,7 @@ const CAPD_VIDEO = { vimeo:"425888006", yt:"", credit:"透析衛教工具包",
   clips:[ [197,237], [237,302], [302,338] ] };
 /* ═══════════════════════════════════════════════ */
 
-let lang='guo';
 const state={ name:"", answers:{}, concerns:[], asks:[], leaning:null, capdStep:0, _picked:undefined, _focus:'first' };
-
-function setLang(l){ lang=l;
-  document.getElementById('langGuo').classList.toggle('on',l==='guo');
-  document.getElementById('langTai').classList.toggle('on',l==='tai');
-  if('speechSynthesis' in window) window.speechSynthesis.cancel(); render(); }
 
 /* ── CAPD 體驗：親手做「接管」與「分離」兩個關鍵步驟；中間的引流、注入看影片帶過 ── */
 const CAPD=[
@@ -250,7 +226,7 @@ const CAPD=[
     d:'灌完後關上開關，把透析液的管路和你肚子上的導管小心分開，再接上新的「保護帽」把導管口蓋好，保持乾淨。',
     do:'關開關、把管路分開，幫導管口蓋上新的保護帽。', svg:'<img class="capd-svg" src="img/capd-5.png" alt="分開管路、蓋上保護帽">' },
 ];
-/* 洗手與留置不做成互動步驟，改用文字＋語音帶過 */
+/* 洗手與留置不做成互動步驟，改用文字帶過 */
 const CAPD_PRE = { t:'開始前：先洗手、戴口罩',
   d:'先戴上口罩，用肥皂把手洗乾淨並擦乾。準備乾淨的桌面，檢查藥水袋清澈、沒有破損或漏液。準備好了我們就開始。' };
 const CAPD_POST = { t:'做完之後：藥水留置，照常生活',
@@ -287,7 +263,7 @@ function render(){
       <h1>認識腹膜透析，並親手體驗一次</h1>
       <p class="lead">先看一段醫師說明的短片，認識腹膜透析（洗肚子），接著親手做一次換液體驗。完成後護理師會花 10 分鐘和你確認、回答問題。</p>
       <div class="card" style="text-align:left">
-      <div class="hint">隨時可暫停、回上一步重看。看不清楚可按右上角切換國語／台語、或開「🔊 朗讀」。</div></div></div>`;
+      <div class="hint">隨時可暫停、回上一步重看。</div></div></div>`;
   }
   else if(s.type==='four'){
     h=`<div class="eyebrow">${s.eyebrow}</div><h1>${s.title}</h1><p class="lead">${s.lead}</p>
@@ -309,7 +285,7 @@ function render(){
   }
   else if(s.type==='quiz'){
     const ans=state.answers[s.id];
-    h=`<div class="eyebrow">${s.eyebrow}</div><div class="card"><div class="qrow"><div class="q">${s.q}</div><button class="speak focusable" onclick="speakScreen()">🔊 唸題</button></div><div class="opts">
+    h=`<div class="eyebrow">${s.eyebrow}</div><div class="card"><div class="q">${s.q}</div><div class="opts">
       ${s.options.map((o,x)=>{let c='opt focusable';
         if(ans!==undefined){if(o.correct)c+=' correct'; else if(state._picked===x)c+=' wrong';}
         const tag=ans!==undefined?(o.correct?'<span class="tag">✓ 正確</span>':(state._picked===x?'<span class="tag">再想想</span>':'')):'';
@@ -344,18 +320,16 @@ function render(){
 
   stage.innerHTML=h;
   if(s.type==='capd'&&CAPD_VIDEO.vimeo&&!CAPD_VIDEO.yt) armCapdVimeo();
-  updateNext(); collectFocus(); applyFocus(); window.scrollTo(0,0); maybeSpeak(s);
+  updateNext(); collectFocus(); applyFocus(); window.scrollTo(0,0);
 }
 
 function videoBlock(key){ const v=VIDEOS[key];
   if(v.yt){ const url=`https://www.youtube-nocookie.com/embed/${v.yt}?rel=0&modestbranding=1&cc_lang_pref=zh-TW`;
     return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`; }
-  const id=(lang==='tai'&&v.vimeo_tw)?v.vimeo_tw:v.vimeo;
-  if(id){ const url=`https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0&dnt=1`;
+  if(v.vimeo){ const url=`https://player.vimeo.com/video/${v.vimeo}?title=0&byline=0&portrait=0&dnt=1`;
     return `<div class="video"><iframe src="${url}" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`; }
-  const tag=lang==='tai'?'台語':'國語';
   return `<div class="video"><div class="vstage"><button class="playbtn focusable" onclick="simPlay(this)">▶</button>
-    <div class="label">${v.label}</div><small>影片插槽（${tag}・示意）— 嘉基置入影片後即可播放</small></div></div>`;
+    <div class="label">${v.label}</div><small>影片插槽（示意）— 嘉基置入影片後即可播放</small></div></div>`;
 }
 function simPlay(el){ el.textContent=el.textContent==='▶'?'⏸':'▶'; }
 
@@ -395,7 +369,9 @@ window.addEventListener('message',e=>{
   else if((d.event==='playProgress'||d.event==='timeupdate')&&d.data){ capdArmed=true;
     const sec=d.data.seconds;
     if(sec<c[1]-1) capdClipStopped=false;
-    else if(sec>=c[1]&&!capdClipStopped){ capdClipStopped=true; capdVimeoPost('pause'); }
+    else if(sec>=c[1]&&!capdClipStopped){ capdClipStopped=true;
+      // 播完自動暫停並跳回本段開頭：之後再按播放就是重看這一段，不會跑到別段
+      capdVimeoPost('pause'); capdVimeoPost('setCurrentTime',c[0]); }
   }
 });
 function capdReplay(){ const c=CAPD_VIDEO.clips[state.capdStep]; if(!c) return;
@@ -450,58 +426,6 @@ document.addEventListener('keydown',e=>{ const k=e.key;
   else if(/^[1-9]$/.test(k)){const items=[...document.getElementById('stage').querySelectorAll('.opt,.chk')]; const n=parseInt(k)-1; if(items[n]){e.preventDefault();items[n].click();}}
 });
 
-/* 語音朗讀 */
-let autoRead=true, voices=[];
-function loadVoices(){ try{ voices=window.speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; } }
-if('speechSynthesis' in window){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
-function pickVoice(){
-  const L=x=>(x.lang||'').toLowerCase(), N=x=>(x.name||'');
-  if(lang==='tai'){
-    for(const p of ['nan','zh-tw-hant-nan','hak']){ const v=voices.find(x=>L(x).startsWith(p)); if(v)return v; }
-    return null;
-  }
-  // 國語：指定優先台灣腔的「美佳」；其次高品質版，避開卡通/表情音
-  const score=x=>{
-    const n=N(x), l=L(x); let s;
-    if(l.startsWith('zh-tw')) s=100;
-    else if(l.startsWith('zh-hk')) s=40;
-    else if(/^zh|^cmn/.test(l) && !l.startsWith('zh-cn') && !/大陸|大陆|china/i.test(n)) s=20;
-    else if(/^zh|^cmn/.test(l)) s=5;
-    else return -1;
-    if(/美佳|mei.?jia/i.test(n)) s+=40;
-    if(/enhanced|premium|進階|siri|neural/i.test(n)) s+=30;
-    if(/google/i.test(n)) s+=15;
-    if(/grandma|grandpa|rocko|boing|bahh|bells|bubbles|jester|organ|superstar|trinoids|whisper|wobble|zarvox|albert|junior|fred|ralph|cellos|pipe|deranged|hysterical|news|eddy|flo|reed/i.test(n)) s-=50;
-    return s;
-  };
-  let best=null, bestS=0;
-  for(const v of voices){ const s=score(v); if(s>bestS){ bestS=s; best=v; } }
-  return best;
-}
-function stepSpeech(s){ if(!s)s=steps[i];
-  if(s.type==='welcome') return '歡迎。認識腹膜透析，並親手體驗一次。';
-  if(s.type==='four') return s.title+'。'+s.lead+'腹膜透析、血液透析、腎臟移植、保守安寧照護。';
-  if(s.type==='quiz') return s.q+'。'+s.options.map((o,x)=>`第${x+1}，${o.t}`).join('。')+'。';
-  if(s.type==='capd'){ const cs=state.capdStep, st=CAPD[cs];
-    let t=(cs===0? CAPD_PRE.t+'。'+CAPD_PRE.d+'　' : '') + st.t+'。'+st.d;
-    if(cs===CAPD.length-1) t+='　'+CAPD_POST.t+'。'+CAPD_POST.d;
-    return t; }
-  if(s.type==='summary') return '已經完成，請把摘要拿給護理師。';
-  if(s.title) return s.title+'。'+(s.lead||'');
-  return ''; }
-function speak(text){ if(!('speechSynthesis' in window)||!text)return;
-  window.speechSynthesis.cancel();
-  let v=pickVoice(), fb=false;
-  if(!v&&lang==='tai'){ const zh=voices.find(x=>(x.lang||'').toLowerCase().startsWith('zh')); if(zh){v=zh; fb=true;} }
-  const u=new SpeechSynthesisUtterance(text); if(v){u.voice=v; u.lang=v.lang;} else u.lang='zh-TW';
-  u.rate=0.9; u.pitch=1; window.speechSynthesis.speak(u);
-  if(fb&&!state._twWarned){ state._twWarned=true; toast('此裝置無台語語音，暫以國語朗讀；台語建議用院方錄音'); } }
-function speakScreen(){ speak(stepSpeech(steps[i])); }
-function maybeSpeak(s){ if(autoRead) speak(stepSpeech(s)); }
-function toggleRead(){ autoRead=!autoRead; const b=document.getElementById('readBtn');
-  b.textContent='🔊 朗讀：'+(autoRead?'開':'關'); b.classList.toggle('on',autoRead);
-  if(autoRead) speakScreen(); else if('speechSynthesis' in window) window.speechSynthesis.cancel(); }
-
 /* 護理師摘要 */
 function leanText(){ return ({pd:'體驗後想選／想試 腹膜透析（洗肚子）',more:'對腹膜透析有興趣、想多了解',other:'想了解其他治療'})[state.leaning]||'未填'; }
 function summaryHTML(){
@@ -509,7 +433,7 @@ function summaryHTML(){
   const done = state.capdStep>=CAPD.length-1;
   const n=new Date(), ts=`${n.getMonth()+1}/${n.getDate()} ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
   return `<div class="summary"><div class="head"><b>護理師確認單　給最後 10 分鐘的對話</b>
-      <span>完成時間：${ts}　語言：${lang==='guo'?'國語':'台語'}</span></div>
+      <span>完成時間：${ts}</span></div>
     <div class="srow"><div class="k">目前傾向</div><span class="lean ${cls}">${leanText()}</span></div>
     <div class="srow"><div class="k">腹膜透析換液體驗</div>${done?`<span class="pill">已完成體驗（親手做：接管、分離）</span>`:'<span class="hint">未完成體驗（可陪同再做一次）</span>'}</div>
     <div class="srow"><div class="k">病人想問的問題</div>${state.asks.length?state.asks.map(a=>`<div class="ask">${a}</div>`).join(''):'<span class="hint">無特別勾選</span>'}</div></div>
@@ -534,7 +458,7 @@ function copySummary(){ const ta=document.getElementById('sumText'); ta.style.di
   if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>toast('已複製，可貼到 LINE 傳給診間')).catch(()=>toast(done?'已複製':'請長按下方文字框複製')); }
   else toast(done?'已複製，可貼到 LINE':'請長按下方文字框複製'); }
 function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); }
-function restart(){ Object.assign(state,{name:"",answers:{},concerns:[],asks:[],leaning:null,capdStep:0,_picked:undefined,_focus:'first',_twWarned:false}); i=0; render(); }
+function restart(){ Object.assign(state,{name:"",answers:{},concerns:[],asks:[],leaning:null,capdStep:0,_picked:undefined,_focus:'first'}); i=0; render(); }
 
 /* 隨機打亂每題選項順序 */
 function shuffle(a){ for(let j=a.length-1;j>0;j--){ const r=Math.floor(Math.random()*(j+1)); const t=a[j]; a[j]=a[r]; a[r]=t; } }
